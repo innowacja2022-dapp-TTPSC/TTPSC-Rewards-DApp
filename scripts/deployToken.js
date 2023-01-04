@@ -3,21 +3,21 @@
 
 const path = require("path");
 const fs = require("fs");
-const hre = require("hardhat");
+
 
 async function main() {
     // This is just a convenience check
-    if (hre.network.name === "hardhat") {
+    if (network.name === "hardhat") {
         console.warn(
             "You are trying to deploy a contract to the Hardhat Network, which" +
             "gets automatically created and destroyed every time. Use the Hardhat" +
             " option '--network localhost'"
         );
-        console.log(`Network name:  ${hre.network.name}`)
-        console.log(`ChainID:       ${hre.network.config.chainId}`)
     }
 
-    const [deployer] = await hre.ethers.getSigners();
+
+
+    const [deployer] = await ethers.getSigners();
     console.log(
         "Deploying the contracts with the account:",
         await deployer.getAddress()
@@ -25,7 +25,7 @@ async function main() {
 
     console.log("Account balance:", (await deployer.getBalance()).toString());
 
-    const Token = await hre.ethers.getContractFactory("Token");
+    const Token = await ethers.getContractFactory("Token");
     const token = await Token.deploy();
     await token.deployed();
 
@@ -47,7 +47,7 @@ function saveFrontendFiles(token) {
         JSON.stringify({ Token: token.address }, undefined, 2)
     );
 
-    const TokenArtifact = hre.artifacts.readArtifactSync("Token");
+    const TokenArtifact = artifacts.readArtifactSync("Token");
 
     fs.writeFileSync(
         path.join(contractsDir, "Token.json"),
