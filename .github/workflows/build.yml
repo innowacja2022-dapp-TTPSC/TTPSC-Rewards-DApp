@@ -1,8 +1,8 @@
-name: Unit Tests
+name: Backend Unit Tests
 on: push
 jobs:
   build-node:
-    name: Build node application
+    name: Build Hardhat Application && Tests
     runs-on: ubuntu-latest
     container: node:18
     steps:
