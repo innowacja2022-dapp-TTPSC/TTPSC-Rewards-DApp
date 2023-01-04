@@ -1,5 +1,9 @@
 name: Node basic build
-on: push
+on:
+  pull_request:
+    branches:
+      - deploy
+    types: [closed]
 jobs:
   build-node:
     name: Build node application
