@@ -12,4 +12,6 @@ jobs:
         name: Check NPM Version
       - uses: actions/checkout@v2
         name: Code Checkout
+      - run: npm install
+        name: Install NPM packages
 
