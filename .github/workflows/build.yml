@@ -1,4 +1,4 @@
-name: Node basic build
+name: Run Unit Tests
 on:
   pull_request:
     branches:
