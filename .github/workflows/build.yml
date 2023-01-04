@@ -4,7 +4,7 @@ jobs:
   build-node:
     name: Build node application
     runs-on: ubuntu-latest
-    container: node:14
+    container: node:18
     steps:
       - run: node --version
         name: Check Node Version
