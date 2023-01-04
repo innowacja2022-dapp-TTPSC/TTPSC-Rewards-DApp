@@ -2,7 +2,8 @@ name: Node basic build
 on:
   pull_request:
     branches:
-      - deploy
+      - main
+      - develop
     types: [closed]
 jobs:
   build-node:
