@@ -1,17 +1,17 @@
 name: Unit Tests
 on:
-  push:
-    branches:
-      - main
-      - develop
+  push
   pull_request:
     branches:
       - main
       - develop
     types:
-      types: [assigned, opened, synchronize, reopened]
+      types: [ assigned, opened, synchronize, reopened ]
   pull_request_review:
-    types: [edited, dismissed]
+    branches:
+      - main
+      - develop
+    types: [ edited, dismissed ]
 jobs:
   build-node:
     name: Build node application
