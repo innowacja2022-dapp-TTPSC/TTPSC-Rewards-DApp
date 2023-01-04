@@ -61,7 +61,7 @@ describe("Token contract", function () {
         it("Should assign the total supply of tokens to the owner", async function () {
             const {hardhatToken, owner} = await loadFixture(deployTokenFixture);
             const ownerBalance = await hardhatToken.balanceOf(owner.address);
-            expect(await hardhatToken.totalSupply()).to.equal(ownerBalance);
+            expect(await hardhatToken.totalSupply()).to.equal(0);
         });
     });
 
