@@ -1,0 +1,13 @@
+node_modules
+.env
+coverage
+coverage.json
+typechain
+typechain-types
+
+# JetBrains files
+.idea
+# Hardhat files
+cache
+artifacts
+

@@ -1,0 +1,33 @@
+{
+  "name": "ttpsc-app",
+  "version": "1.0.0",
+  "description": "The main goal of this project is to create a decentralised system that will allow employees to receive tokens and exchange them for different rewards. The whole project is based on blockchain technology and makes practical use of smart contracts and cryptocurrency.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/innowacja2022-dapp-TTPSC/TTPSC-App.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/innowacja2022-dapp-TTPSC/TTPSC-App/issues"
+  },
+  "homepage": "https://github.com/innowacja2022-dapp-TTPSC/TTPSC-App#readme",
+  "devDependencies": {
+    "@ethersproject/abi": "^5.4.7",
+    "@ethersproject/providers": "^5.4.7",
+    "@nomicfoundation/hardhat-chai-matchers": "^1.0.0",
+    "@nomicfoundation/hardhat-network-helpers": "^1.0.0",
+    "@nomicfoundation/hardhat-toolbox": "^1.0.1",
+    "@nomiclabs/hardhat-ethers": "^2.0.0",
+    "@nomiclabs/hardhat-etherscan": "^3.0.0",
+    "chai": "^4.2.0",
+    "ethers": "^5.4.7",
+    "hardhat": "^2.11.0",
+    "hardhat-gas-reporter": "^1.0.8",
+    "solidity-coverage": "^0.7.21"
+  }
+}
