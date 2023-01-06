@@ -31,6 +31,18 @@ npx hardhat run scripts/deploy.js
 npx hardhat node
 npx hardhat run scripts/deployToken.js --network localhost
 ```
+### Connect to Mumbai network
+
+To connect to Mumbai network you need Mumbai RPC url and your private key.
+Both can be found in metamask.  
+Follow these steps:
+1. Create .env file in root directory  
+2. Type the following parameters:  
+    MUMBAI_RPC_URL = 'Mumbai RPC url'  
+    PRIVATE_KEY = 'Your private key'  
+
+You can verify contract deployment here:
+https://mumbai.polygonscan.com/
 
 ### Run frontend app
 
