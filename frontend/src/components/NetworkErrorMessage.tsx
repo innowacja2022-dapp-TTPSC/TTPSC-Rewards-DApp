@@ -1,6 +1,12 @@
 import React from "react";
+import { ReactElement } from "react";
 
-export function NetworkErrorMessage({message, dismiss}) {
+type Props ={
+    message: string;
+    dismiss: () => void;
+}
+
+export const NetworkErrorMessage = ({message, dismiss}:Props):ReactElement => {
     return (
         <div className="alert alert-danger" role="alert">
             {message}
