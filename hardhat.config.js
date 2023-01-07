@@ -6,19 +6,27 @@ require("dotenv").config();
 // testing the frontend.
 require("./tasks/faucet");
 
-const {MUMBAI_RPC_URL, PRIVATE_KEY} = process.env;
+const {NETWORK_NAME, NETWORK_RPC_URL, PRIVATE_KEY} = process.env;
+
+function initBlockChainNetworks() {
+    const networks = {}
+
+    networks["hardhat"] = {
+        chainId: 1337
+    }
+
+    networks[NETWORK_NAME] = {
+        url: NETWORK_RPC_URL,
+        accounts: [PRIVATE_KEY]
+    }
+
+    return networks;
+}
 
 /** @type import('hardhat/config').HardhatUserConfig */
 module.exports = {
     solidity: "0.8.17",
-    defaultNetwork: "mumbai",
-    networks: {
-        hardhat: {
-            chainId: 1337
-        },
-        mumbai: {
-            url: MUMBAI_RPC_URL,
-            accounts: [PRIVATE_KEY]
-        }
-    }
+    defaultNetwork: NETWORK_NAME,
+    networks: initBlockChainNetworks()
+
 };
