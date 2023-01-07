@@ -9,8 +9,10 @@
 
 The scripts are run by hardhat in the console as follows.
 
-```
+```shell
 npx hardhat run scripts/deploy.js
+npx hardhat run scripts/deployToken.js
+npx hardhat run scripts/deployTTPSC.js
 ```
 
 Hardhat node is default network where contracts are deployed. To change blockchain network
@@ -18,7 +20,7 @@ use ```--network <network-name>```
 
 For example:
 
-```
+```shell
 npx hardhat run scripts/deploy.js --network mumbai
 ```
 
