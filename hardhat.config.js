@@ -6,7 +6,7 @@ require("dotenv").config();
 // testing the frontend.
 require("./tasks/faucet");
 
-const {NETWORK_NAME, NETWORK_RPC_URL, PRIVATE_KEY} = process.env;
+const {REMOTE_NETWORK_NAME, REMOTE_NETWORK_RPC_URL, PRIVATE_KEY} = process.env;
 
 function initBlockChainNetworks() {
     const networks = {}
@@ -15,9 +15,11 @@ function initBlockChainNetworks() {
         chainId: 1337
     }
 
-    networks[NETWORK_NAME] = {
-        url: NETWORK_RPC_URL,
-        accounts: [PRIVATE_KEY]
+    if (REMOTE_NETWORK_NAME) {
+        networks[REMOTE_NETWORK_NAME] = {
+            url: REMOTE_NETWORK_RPC_URL,
+            accounts: [PRIVATE_KEY]
+        }
     }
 
     return networks;
@@ -26,7 +28,7 @@ function initBlockChainNetworks() {
 /** @type import('hardhat/config').HardhatUserConfig */
 module.exports = {
     solidity: "0.8.17",
-    defaultNetwork: NETWORK_NAME,
+    defaultNetwork: REMOTE_NETWORK_NAME,
     networks: initBlockChainNetworks()
 
 };
