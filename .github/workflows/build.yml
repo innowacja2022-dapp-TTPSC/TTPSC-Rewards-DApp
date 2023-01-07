@@ -1,0 +1,19 @@
+name: Backend Unit Tests
+on: push
+jobs:
+  build-node:
+    name: Build Hardhat Application && Tests
+    runs-on: ubuntu-latest
+    container: node:18
+    steps:
+      - run: node --version
+        name: Check Node Version
+      - run: npm --version
+        name: Check NPM Version
+      - uses: actions/checkout@v2
+        name: Code Checkout
+      - run: npm install
+        name: Install NPM packages
+      - run: npx hardhat test
+        name: Run Unit Tests
+
