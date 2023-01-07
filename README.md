@@ -23,6 +23,11 @@ npx hardhat node
 npx hardhat run scripts/deploy.js
 ```
 
+Format your .sol files
+```shell
+npx prettier --write 'contracts/**/*.sol'
+```
+
 ## Quick start
 
 ### Setup blockchain and deploy token smart contract on this blockchain
