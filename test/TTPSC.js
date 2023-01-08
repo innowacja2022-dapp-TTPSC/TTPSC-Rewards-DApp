@@ -37,5 +37,20 @@ describe("Token contract", function () {
             const ownerBalance = await hardhatToken.balanceOf(owner.address);
             expect(await hardhatToken.totalSupply()).to.equal(ownerBalance);
         });
+
+
+        it("Should set the right token name", async function() {
+
+            const {hardhatToken} = await loadFixture(deployTTPSCTokenFixture);
+            const tokenName = "TTPSC token";
+            expect(await hardhatToken.name()).to.equal(tokenName);
+        });
+
+        it("Should set the right token symbol", async function() {
+
+            const {hardhatToken} = await loadFixture(deployTTPSCTokenFixture);
+            const tokenSymbol = "TTPSC";
+            expect(await hardhatToken.symbol()).to.equal(tokenSymbol);
+        });
     });
 });
