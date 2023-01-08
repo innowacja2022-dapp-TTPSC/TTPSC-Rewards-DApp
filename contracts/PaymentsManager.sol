@@ -105,9 +105,8 @@ contract PaymentsManager {
         paymentRequestCount++;
     }
 
-    function resolvePaymentRequest(
+    function acceptPaymentRequest(
         uint256 paymentRequestID,
-        bool accept,
         string memory decisionReason
     ) public {
         require(
@@ -119,19 +118,42 @@ contract PaymentsManager {
         paymentRequestID
         ];
         require(
-            paymentRequest.status == PaymentRequestStatus.PENDING,
+            paymentRequest.status == RequestState.PENDING,
             "This paymentRequest has already been decided on."
         );
 
         paymentRequest.decisionMaker = msg.sender;
         paymentRequest.decisionReason = decisionReason;
-        paymentRequest.status = accept
-        ? PaymentRequestStatus.ACCEPTED
-        : PaymentRequestStatus.REJECTED;
+        paymentRequest.status = RequestState.ACCEPTED;
 
-        if (accept) {
-            token.transfer(paymentRequest.employee, 1000);
-        }
+
+        address from = address(this);
+        token.transfer(paymentRequest.employee, paymentRequest.amount);
+        //token.transferFrom(address(this), paymentRequest.employee, paymentRequest.amount);
+
+    }
+
+    function rejectPaymentRequest(
+        uint256 paymentRequestID,
+        string memory decisionReason
+    ) public {
+        require(
+            isEmployer[msg.sender],
+            "Only employers can decide on paymentRequests ."
+        );
+
+        PaymentRequest storage paymentRequest = paymentRequests[
+        paymentRequestID
+        ];
+        require(
+            paymentRequest.status == RequestState.PENDING,
+            "This paymentRequest has already been decided on."
+        );
+
+        paymentRequest.decisionMaker = msg.sender;
+        paymentRequest.decisionReason = decisionReason;
+        paymentRequest.status = RequestState.REJECTED;
+
     }
 
     function getPaymentRequestStatus(
