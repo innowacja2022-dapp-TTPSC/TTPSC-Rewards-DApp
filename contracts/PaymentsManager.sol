@@ -1,10 +1,11 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.9;
 
-import "./Token.sol";
+import "./TTPSC.sol";
 
 contract PaymentsManager {
-    Token public token;
+    // notice that PaymentsManager require token balance in TTPSC contract
+    TTPSC public token;
 
     address[] public employees;
 
@@ -29,7 +30,7 @@ contract PaymentsManager {
         PaymentRequestStatus status;
     }
 
-    constructor(Token _token) {
+    constructor(TTPSC _token) {
         token = _token;
         addUser(token.owner(), true);
     }
@@ -118,19 +119,16 @@ contract PaymentsManager {
         paymentRequestID
         ];
         require(
-            paymentRequest.status == RequestState.PENDING,
+            paymentRequest.status == PaymentRequestStatus.PENDING,
             "This paymentRequest has already been decided on."
         );
 
         paymentRequest.decisionMaker = msg.sender;
         paymentRequest.decisionReason = decisionReason;
-        paymentRequest.status = RequestState.ACCEPTED;
+        paymentRequest.status = PaymentRequestStatus.ACCEPTED;
 
-
-        address from = address(this);
+        // todo consider allowance and transferFrom Pattern
         token.transfer(paymentRequest.employee, paymentRequest.amount);
-        //token.transferFrom(address(this), paymentRequest.employee, paymentRequest.amount);
-
     }
 
     function rejectPaymentRequest(
@@ -146,31 +144,36 @@ contract PaymentsManager {
         paymentRequestID
         ];
         require(
-            paymentRequest.status == RequestState.PENDING,
+            paymentRequest.status == PaymentRequestStatus.PENDING,
             "This paymentRequest has already been decided on."
         );
 
         paymentRequest.decisionMaker = msg.sender;
         paymentRequest.decisionReason = decisionReason;
-        paymentRequest.status = RequestState.REJECTED;
-
+        paymentRequest.status = PaymentRequestStatus.REJECTED;
     }
 
-    function getPaymentRequestStatus(
-        uint256 paymentRequestID
-    ) public view returns (PaymentRequestStatus) {
+    function getPaymentRequestStatus(uint256 paymentRequestID)
+    public
+    view
+    returns (PaymentRequestStatus)
+    {
         return paymentRequests[paymentRequestID].status;
     }
 
-    function getPaymentRequestDescription(
-        uint256 paymentRequestID
-    ) public view returns (string memory) {
+    function getPaymentRequestDescription(uint256 paymentRequestID)
+    public
+    view
+    returns (string memory)
+    {
         return paymentRequests[paymentRequestID].requestReason;
     }
 
-    function getPaymentRequestAmount(
-        uint256 paymentRequestID
-    ) public view returns (uint256) {
+    function getPaymentRequestAmount(uint256 paymentRequestID)
+    public
+    view
+    returns (uint256)
+    {
         return paymentRequests[paymentRequestID].amount;
     }
 
