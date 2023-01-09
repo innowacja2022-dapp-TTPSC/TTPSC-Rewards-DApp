@@ -2,9 +2,6 @@ import { createContext, ReactElement, ReactNode, useContext, useMemo } from "rea
 
 
 export type Connection = {
-  // The user's address and balance
-  selectedAddress?: string;
-  balance?: number;
   // The ID about transactions being sent, and any possible error with them
   txBeingSent?: string;
   transactionError?: string;
@@ -18,12 +15,12 @@ export type ConnectionServiceValue = {
 
 export type ConnectionServiceNullableValue =
   | {
-      isInitialized: false;
-    }
+    isInitialized: false;
+  }
   | {
-      isInitialized: true;
-      value: ConnectionServiceValue;
-    };
+    isInitialized: true;
+    value: ConnectionServiceValue;
+  };
 
 export const ConnectionService = createContext<ConnectionServiceNullableValue>({
   isInitialized: false,
@@ -48,7 +45,7 @@ export const ConnectionServiceProvider = ({ children }: Props): ReactElement => 
     return {
       isInitialized: true,
       value: {
-        
+
       },
     };
   }, []);

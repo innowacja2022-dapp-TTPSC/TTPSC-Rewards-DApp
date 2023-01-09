@@ -34,7 +34,7 @@ npx prettier --write 'contracts/**/*.sol'
 
 ```shell
 npx hardhat node
-npx hardhat run scripts/deployToken.js --network localhost
+npx hardhat run scripts/deployToken.js --network localhost && npx hardhat run scripts/deploy.js --network localhost
 ```
 ### Connect to Mumbai network
 
@@ -52,8 +52,8 @@ You can verify contract deployment on network scanner like : [mumbai.polygonscan
 
 ```shell
 cd .\frontend\
-npm install
-npm start
+npm i
+npm run dev
 ```
 
 ### Add local blockchain node to Metamask
