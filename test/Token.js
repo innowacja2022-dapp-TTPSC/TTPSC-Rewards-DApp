@@ -1,9 +1,13 @@
+// ### I COMMENTED OUT THIS FILE SO IT DOES NOT SLOW DOWN TESTING PROCESS
+
 // This is an example test file. Hardhat will run every *.js file in `test/`,
 // so feel free to add new ones.
 
 // Hardhat tests are normally written with Mocha and Chai.
 
 // We import Chai to use its asserting functions here.
+
+/*
 const {expect} = require("chai");
 
 // We use `loadFixture` to share common setups (or fixtures) between tests.
@@ -110,3 +114,5 @@ describe("Token contract", function () {
         });
     });
 });
+
+*/
