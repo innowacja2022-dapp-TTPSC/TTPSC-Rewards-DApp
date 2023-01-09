@@ -41,11 +41,15 @@ export type Wallet = {
   _token: ethers.Contract;
   tokenData: Token;
   _pollDataInterval: NodeJS.Timer;
+  selectedAddress: string;
+  balance: number;
 };
 
 export const Dapp = (): ReactElement => {
   const [connection, setConnetcion] = useState<Connection>();
   const [wallet, setWallet] = useState<Wallet>();
+
+  // console.log(wallet);
 
   // Ethereum wallets inject the window.ethereum object. If it hasn't been
   // injected, we instruct the user to install MetaMask.
@@ -60,7 +64,7 @@ export const Dapp = (): ReactElement => {
   //
   // Note that we pass it a callback that is going to be called when the user
   // clicks a button. This callback just calls the _connectWallet method.
-  if (!connection?.selectedAddress) {
+  if (!wallet?.selectedAddress) {
     return (
       <ConnectWallet
         handleWallet={setWallet}
@@ -72,7 +76,7 @@ export const Dapp = (): ReactElement => {
 
   // If the token data or the user's balance hasn't loaded yet, we show
   // a loading component.
-  if (!wallet?.tokenData || !connection.balance) {
+  if (!wallet?.tokenData || !wallet.balance) {
     return <Loading />;
   }
 
@@ -85,9 +89,9 @@ export const Dapp = (): ReactElement => {
             {wallet.tokenData.name} ({wallet.tokenData.symbol})
           </h1>
           <p>
-            Welcome <b>{connection.selectedAddress}</b>, you have{" "}
+            Welcome <b>{wallet.selectedAddress}</b>, you have{" "}
             <b>
-              {connection.balance.toString()} {wallet.tokenData.symbol}
+              {wallet.balance.toString()} {wallet.tokenData.symbol}
             </b>
             .
           </p>
@@ -103,15 +107,15 @@ export const Dapp = (): ReactElement => {
               for it to be mined.
               If we are waiting for one, we show a message here.
             */}
-          {connection.txBeingSent && (
+          {/* {connection.txBeingSent && (
             <WaitingForTransactionMessage txHash={connection.txBeingSent} />
-          )}
+          )} */}
 
           {/*
               Sending a transaction can fail in multiple ways. 
               If that happened, we show a message here.
             */}
-          {connection.transactionError && (
+          {/* {connection.transactionError && (
             <TransactionErrorMessage
               message={connection.transactionError}
               dismiss={() =>
@@ -121,7 +125,7 @@ export const Dapp = (): ReactElement => {
                 }))
               }
             />
-          )}
+          )} */}
         </div>
       </div>
 
@@ -130,8 +134,8 @@ export const Dapp = (): ReactElement => {
           {/*
               If the user has no tokens, we don't show the Transfer form
             */}
-          {connection.balance === 0 && (
-            <NoTokensMessage selectedAddress={connection.selectedAddress} />
+          {wallet.balance === 0 && (
+            <NoTokensMessage selectedAddress={wallet.selectedAddress} />
           )}
 
           {/*
@@ -140,10 +144,10 @@ export const Dapp = (): ReactElement => {
               The component doesn't have logic, it just calls the transferTokens
               callback.
             */}
-          {connection.balance > 0 && wallet?._token && (
+          {wallet.balance > 0 && wallet?._token && (
             <Transfer
               _token={wallet._token}
-              from={connection.selectedAddress}
+              from={wallet.selectedAddress}
               tokenSymbol={wallet.tokenData.symbol}
             />
           )}
