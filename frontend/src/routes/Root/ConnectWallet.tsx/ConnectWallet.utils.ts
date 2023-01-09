@@ -1,4 +1,4 @@
-import { _startPollingData, _stopPollingData } from "@utils/pollingData";
+import { _getBalance, _startPollingData, _stopPollingData } from "@utils/pollingData";
 import { ethers } from "ethers";
 import TokenArtifact from "@contracts/Token.json";
 import contractAddress from "@contracts/contract-address.json";
@@ -45,6 +45,7 @@ export async function _initialize(userAddress: string) {
     tokenData,
     _pollDataInterval,
   };
+
 }
 
 export async function _connectWallet(
@@ -69,6 +70,9 @@ export async function _connectWallet(
   const { _token, tokenData, _pollDataInterval } = await _initialize(
     selectedAddress
   );
+
+  const balance = await _getBalance(_token, selectedAddress);
+
   handleWallet({
     _token,
     tokenData: {
@@ -76,6 +80,8 @@ export async function _connectWallet(
       symbol: tokenData.tokenData.symbol,
     },
     _pollDataInterval,
+    selectedAddress,
+    balance,
   });
   // We reinitialize it whenever the user changes their account.
   window.ethereum.on("accountsChanged", (newAddress: string) => {

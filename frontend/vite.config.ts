@@ -34,7 +34,7 @@ export default defineConfig({
     },
   },
   plugins: pluginsList,
-  server: { https: true },
+  server: { https: false },
   test: {
     globals: true,
     environment: "jsdom",
