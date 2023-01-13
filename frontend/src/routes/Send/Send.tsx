@@ -1,9 +1,7 @@
-import { ReactElement } from "react"
+import { ReactElement } from "react";
 
-const Send = ():ReactElement => {
-    return(
-        <div></div>
-    )
-}
+const Send = (): ReactElement => {
+  return <div />;
+};
 
-export default Send
+export default Send;
