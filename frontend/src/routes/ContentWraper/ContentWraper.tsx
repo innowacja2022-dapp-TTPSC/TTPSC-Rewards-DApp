@@ -8,7 +8,6 @@ export const ContentWrapper = (): ReactElement => {
   return (
     <Flex flexDirection="column" h="100vh">
       <TopBar />
-      <MainBox />
       <Outlet />
     </Flex>
   );

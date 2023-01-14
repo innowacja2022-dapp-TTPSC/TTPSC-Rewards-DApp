@@ -20,7 +20,7 @@ export const TopBar = (): ReactElement => {
         <Box bgColor="gray.700" h="12" w="12">
           <Image src='logo.png' />
         </Box>
-        <TopBarLink path={paths.root}>Awords</TopBarLink>
+        <TopBarLink path={paths.root}>Awards</TopBarLink>
         <TopBarLink path={paths.send}>Send</TopBarLink>
         <TopBarLink path={paths.about}>About</TopBarLink>
       </Flex>
