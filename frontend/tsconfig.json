@@ -23,11 +23,15 @@
     "paths": {
       "@*": [
         "./*"
-      ],
-    },
+      ]
+    }
   },
   "include": [
-    "src", "src/vite-env.d.ts"
+    "src"
   ],
-  "exclude": ["node_modules"]
+  "references": [
+    {
+      "path": "./tsconfig.node.json"
+    }
+  ]
 }

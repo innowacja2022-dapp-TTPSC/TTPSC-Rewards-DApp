@@ -1,26 +1,28 @@
-import { createContext, ReactElement, ReactNode, useContext, useMemo } from "react";
-
+import {
+  createContext,
+  ReactElement,
+  ReactNode,
+  useContext,
+  useMemo,
+} from "react";
 
 export type Connection = {
+  networkError?: string;
+  transactionError?: string;
   // The ID about transactions being sent, and any possible error with them
   txBeingSent?: string;
-  transactionError?: string;
-  networkError?: string;
 };
 
-
-export type ConnectionServiceValue = {
-
-};
+export type ConnectionServiceValue = {};
 
 export type ConnectionServiceNullableValue =
   | {
-    isInitialized: false;
-  }
+      isInitialized: false;
+    }
   | {
-    isInitialized: true;
-    value: ConnectionServiceValue;
-  };
+      isInitialized: true;
+      value: ConnectionServiceValue;
+    };
 
 export const ConnectionService = createContext<ConnectionServiceNullableValue>({
   isInitialized: false,
@@ -40,17 +42,19 @@ type Props = {
   children: ReactNode;
 };
 
-export const ConnectionServiceProvider = ({ children }: Props): ReactElement => {
+export const ConnectionServiceProvider = ({
+  children,
+}: Props): ReactElement => {
   const value = useMemo<ConnectionServiceNullableValue>(() => {
     return {
       isInitialized: true,
-      value: {
-
-      },
+      value: {},
     };
   }, []);
 
   return (
-    <ConnectionService.Provider value={value}>{children}</ConnectionService.Provider>
+    <ConnectionService.Provider value={value}>
+      {children}
+    </ConnectionService.Provider>
   );
 };

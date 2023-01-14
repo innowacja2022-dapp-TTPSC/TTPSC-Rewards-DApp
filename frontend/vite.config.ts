@@ -15,7 +15,6 @@ const pluginsList = [
   mkcert(),
   visualizer() as PluginOption,
 ];
-
 // https://vitejs.dev/config/
 // https://www.npmjs.com/package/vite-plugin-mkcert
 export default defineConfig({
