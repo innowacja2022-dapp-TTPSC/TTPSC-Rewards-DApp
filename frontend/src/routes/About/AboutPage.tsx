@@ -3,7 +3,7 @@ import { ReactElement } from "react";
 
 const AboutPage = (): ReactElement => {
     return <>
-        <Center minH="20ch" maxW="150ch">
+        <Center minH="20ch">
             <Heading as="h6">
                 The future of
                 <Container color="blue.500" display="inline">

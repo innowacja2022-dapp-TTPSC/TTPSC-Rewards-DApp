@@ -3,7 +3,7 @@ import { ReactElement } from "react";
 
 const SendForm = (): ReactElement => {
     return <>
-        <Center minH="20ch" maxW="150ch">
+        <Center minH="20ch">
             <Heading as="h2">
                 Send
                 <Container color="blue.500" display="inline">

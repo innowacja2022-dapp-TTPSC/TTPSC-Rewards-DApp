@@ -9,7 +9,7 @@ export const MainBox = (): ReactElement => {
     const status = useWalletService();
     return (
         <>
-            <Center minH="10ch" maxW="150ch">
+            <Center minH="10ch">
                 <Heading as="h2">
                     Redeem
                     <Container color="blue.500" display="inline">
