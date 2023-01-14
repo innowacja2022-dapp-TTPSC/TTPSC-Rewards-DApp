@@ -7,6 +7,8 @@ type Props = {
   path: string;
 };
 
+const currency = 'MHT';
+
 export const TopBarLink = ({ path, children }: Props): ReactElement => {
   return (
     <Link

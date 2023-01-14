@@ -1,4 +1,4 @@
-import { Box, Flex } from "@chakra-ui/react";
+import { Box, Flex, Image } from "@chakra-ui/react";
 import { useWalletService } from "@services/WalletService";
 import { paths } from "@utils/paths";
 import { ReactElement } from "react";
@@ -18,7 +18,7 @@ export const TopBar = (): ReactElement => {
     >
       <Flex alignItems="center" gap="10">
         <Box bgColor="gray.700" h="12" w="12">
-          {/* LOGO */}
+          <Image src='logo.png' />
         </Box>
         <TopBarLink path={paths.root}>Awords</TopBarLink>
         <TopBarLink path={paths.send}>Send</TopBarLink>
