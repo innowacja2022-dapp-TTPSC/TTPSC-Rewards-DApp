@@ -6,17 +6,14 @@ import { useState } from "react";
 // All the logic of this dapp is contained in the Dapp component.
 // These other components are just presentational ones: they don't have any
 // logic. They just render HTML.
-import { NoWalletDetected } from "./NoWalletDetected";
-import { ConnectWallet } from "../routes/Root/ConnectWallet.tsx/ConnectWallet";
-import { Loading } from "./Loading";
-import { Transfer } from "./Transfer/Transfer";
-import { TransactionErrorMessage } from "./TransactionErrorMessage";
-import { WaitingForTransactionMessage } from "./WaitingForTransactionMessage";
-import { NoTokensMessage } from "./NoTokensMessage";
-import { ReactElement } from "react";
+import { Box } from "@chakra-ui/react";
 import { Connection } from "@services/SendService";
-import { Token } from "@services/TokenService";
-import { ethers } from "ethers";
+import { Wallet } from "@services/WalletService";
+import { ReactElement } from "react";
+import { Loading } from "./Loading";
+import { NoTokensMessage } from "./NoTokensMessage";
+import { NoWalletDetected } from "./NoWalletDetected";
+import { Transfer } from "./Transfer/Transfer";
 
 // This is the Hardhat Network id that we set in our hardhat.config.js.
 // Here's a list of network ids https://docs.metamask.io/guide/ethereum-provider.html#properties
@@ -36,14 +33,6 @@ import { ethers } from "ethers";
 // Note that (3) and (4) are specific of this sample application, but they show
 // you how to keep your Dapp and contract's state in sync,  and how to send a
 // transaction.
-
-export type Wallet = {
-  _token: ethers.Contract;
-  tokenData: Token;
-  _pollDataInterval: NodeJS.Timer;
-  selectedAddress: string;
-  balance: number;
-};
 
 export const Dapp = (): ReactElement => {
   const [connection, setConnetcion] = useState<Connection>();
@@ -66,11 +55,12 @@ export const Dapp = (): ReactElement => {
   // clicks a button. This callback just calls the _connectWallet method.
   if (!wallet?.selectedAddress) {
     return (
-      <ConnectWallet
-        handleWallet={setWallet}
-        networkError={connection?.networkError}
-        handleConnection={setConnetcion}
-      />
+      <Box />
+      // <ConnectWallet
+      //   handleWallet={setWallet}
+      //   networkError={connection?.networkError}
+      //   handleConnection={setConnetcion}
+      // />
     );
   }
 
