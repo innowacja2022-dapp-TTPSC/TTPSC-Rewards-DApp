@@ -1,4 +1,4 @@
-import { Box, Center, Container, Wrap, WrapItem } from "@chakra-ui/react";
+import { Box, Center, Container, Flex, Spacer, Wrap, WrapItem } from "@chakra-ui/react";
 import { ReactElement } from "react";
 import { AwardCard } from "./AwardCard";
 
@@ -13,71 +13,50 @@ const cardData = {
 export const CardWrapper = (): ReactElement => {
   return (
     <>
-      <Container centerContent maxW="150ch">
-        <Wrap justify="center" spacing="70px">
-          <WrapItem>
-            <Center>
-              <AwardCard
-                description={cardData.description}
-                image={cardData.image}
-                title={cardData.title}
-                value={cardData.value}
-              />
-            </Center>
-          </WrapItem>
-          <WrapItem>
-            <Center>
-              <AwardCard
-                description={cardData.description}
-                image={cardData.image}
-                title={cardData.title}
-                value={cardData.value}
-              />
-            </Center>
-          </WrapItem>
-          <WrapItem>
-            <Center>
-              <AwardCard
-                description={cardData.description}
-                image={cardData.image}
-                title={cardData.title}
-                value={cardData.value}
-              />
-            </Center>
-          </WrapItem>
-          <WrapItem>
-            <Center>
-              <AwardCard
-                description={cardData.description}
-                image={cardData.image}
-                title={cardData.title}
-                value={cardData.value}
-              />
-            </Center>
-          </WrapItem>
-          <WrapItem>
-            <Center>
-              <AwardCard
-                description={cardData.description}
-                image={cardData.image}
-                title={cardData.title}
-                value={cardData.value}
-              />
-            </Center>
-          </WrapItem>
-          <WrapItem>
-            <Center>
-              <AwardCard
-                description={cardData.description}
-                image={cardData.image}
-                title={cardData.title}
-                value={cardData.value}
-              />
-            </Center>
-          </WrapItem>
-          <Box h="100px" w="100%" />
-        </Wrap>
-      </Container>
+      <Flex flexWrap="wrap" gap="8" justify="center" maxW="1300px">
+        <AwardCard
+          description={cardData.description}
+          image={cardData.image}
+          title={cardData.title}
+          value={cardData.value}
+        />
+
+        <AwardCard
+          description={cardData.description}
+          image={cardData.image}
+          title={cardData.title}
+          value={cardData.value}
+        />
+
+        <AwardCard
+          description={cardData.description}
+          image={cardData.image}
+          title={cardData.title}
+          value={cardData.value}
+        />
+
+        <AwardCard
+          description={cardData.description}
+          image={cardData.image}
+          title={cardData.title}
+          value={cardData.value}
+        />
+
+        <AwardCard
+          description={cardData.description}
+          image={cardData.image}
+          title={cardData.title}
+          value={cardData.value}
+        />
+
+        <AwardCard
+          description={cardData.description}
+          image={cardData.image}
+          title={cardData.title}
+          value={cardData.value}
+        />
+      </Flex>
+
     </>
   );
 };
