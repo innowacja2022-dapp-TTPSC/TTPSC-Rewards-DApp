@@ -18,7 +18,7 @@ export const TopBar = (): ReactElement => {
     >
       <Flex alignItems="center" gap="10">
         <Box bgColor="gray.700" h="12" w="12">
-          <Image src='logo.png' />
+          <Image src="logo.png" />
         </Box>
         <TopBarLink path={paths.root}>Awards</TopBarLink>
         <TopBarLink path={paths.send}>Send</TopBarLink>

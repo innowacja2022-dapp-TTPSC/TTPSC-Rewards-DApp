@@ -1,7 +1,6 @@
-import { Box, Center, Heading } from "@chakra-ui/react";
 import { Loading } from "@components/Loading";
 import { NoWalletDetected } from "@components/NoWalletDetected";
-import { MainBox } from "@routes/ContentWraper/MainBox/MainBox";
+import { MainBox } from "@routes/Root/MainBox/MainBox";
 import { useWalletService } from "@services/WalletService";
 import { ReactElement } from "react";
 
