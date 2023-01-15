@@ -62,28 +62,6 @@ contract PaymentsManager {
         isCurrentEmployee[employee] = false;
     }
 
-    function fireEmployeeAndReclaimTokens(address employee) public {
-        fireEmployee(employee);
-        reclaimTokens(employee);
-    }
-
-    function reclaimTokens(address employee) public {
-        require(
-            isEmployer[msg.sender],
-            "Only the employer can reclaim tokens."
-        );
-
-        require(
-            !isCurrentEmployee[employee],
-            "This employee is still a current employee."
-        );
-
-        uint256 employeeBalance = token.balanceOf(employee);
-
-        token.transfer(msg.sender, employeeBalance);
-        token.transfer(employee, 0);
-    }
-
     function createPaymentRequest(
         uint256 amount,
         string memory paymentRequestReason
