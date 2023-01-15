@@ -1,5 +1,6 @@
 export const paths = {
-    root: "/",
-    send: "/send",
-    about: "/about",
-}
+  root: "/",
+  send: "/send",
+  about: "/about",
+  notFound: "/notFound",
+};

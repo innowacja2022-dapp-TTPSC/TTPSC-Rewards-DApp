@@ -3,23 +3,26 @@ import { ChangeEvent, ReactElement, useState } from "react";
 import { _transferTokens } from "./Transfer.utils";
 
 type Props = {
+  _token: ethers.Contract;
+  from: string;
   tokenSymbol: string;
-  from: string
-  _token: ethers.Contract
 };
 
-export const Transfer = ({ tokenSymbol, from,_token }: Props): ReactElement => {
-
+export const Transfer = ({
+  tokenSymbol,
+  from,
+  _token,
+}: Props): ReactElement => {
   const [to, setTo] = useState("");
   const [amount, setAmount] = useState(0);
 
-  const hangleAmountChange = (e:ChangeEvent<HTMLInputElement>) => {
-    setAmount(Number(e.target.value))
-  }
+  const hangleAmountChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setAmount(Number(e.target.value));
+  };
 
-  const handleToChange  = (e:ChangeEvent<HTMLInputElement>) => {
-    setTo(e.target.value)
-  }
+  const handleToChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setTo(e.target.value);
+  };
   return (
     <div>
       <h4>Transfer</h4>
@@ -30,7 +33,7 @@ export const Transfer = ({ tokenSymbol, from,_token }: Props): ReactElement => {
           event.preventDefault();
 
           if (to && amount) {
-            _transferTokens(to, amount, _token ,from);
+            _transferTokens(to, amount, _token, from);
           }
         }}
       >
@@ -38,19 +41,25 @@ export const Transfer = ({ tokenSymbol, from,_token }: Props): ReactElement => {
           <label>Amount of {tokenSymbol}</label>
           <input
             className="form-control"
-            type="number"
-            step="1"
             name="amount"
+            onChange={hangleAmountChange}
             placeholder="1"
             required
+            step="1"
+            type="number"
             value={amount}
-            onChange={hangleAmountChange}
           />
         </div>
         <div className="form-group">
-          <label>Recipient address</label>
-          <input className="form-control" type="text" name="to" value={to}
-            onChange={handleToChange} required />
+          <label htmlFor="to">Recipient address</label>
+          <input
+            className="form-control"
+            name="to"
+            onChange={handleToChange}
+            required
+            type="text"
+            value={to}
+          />
         </div>
         <div className="form-group">
           <input className="btn btn-primary" type="submit" value="Transfer" />

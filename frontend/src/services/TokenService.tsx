@@ -1,4 +1,10 @@
-import { createContext, ReactElement, ReactNode, useContext, useMemo } from "react";
+import {
+  createContext,
+  ReactElement,
+  ReactNode,
+  useContext,
+  useMemo,
+} from "react";
 
 export type Token = {
   //The info of the token (i.e. It's Name and symbol)
@@ -6,12 +12,7 @@ export type Token = {
   symbol: string;
 };
 
-
-
-
-export type TokenServiceValue = {
-
-};
+export type TokenServiceValue = {};
 
 export type TokenServiceNullableValue =
   | {
@@ -44,9 +45,7 @@ export const TokenServiceProvider = ({ children }: Props): ReactElement => {
   const value = useMemo<TokenServiceNullableValue>(() => {
     return {
       isInitialized: true,
-      value: {
-        
-      },
+      value: {},
     };
   }, []);
 
