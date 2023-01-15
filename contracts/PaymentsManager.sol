@@ -35,14 +35,32 @@ contract PaymentsManager {
         addUser(token.owner(), true);
     }
 
+    event PaymentRequestNew(
+        uint256 paymentRequestID,
+        uint256 indexed amount,
+        address employee
+    );
+    event PaymentRequestAccepted(
+        address employee
+    );
+    event PaymentRequestRejected(
+        address employee
+    );
+
     function hireEmployer(address employer) public {
-        require(isEmployer[msg.sender], "Only the employer can add employees.");
+        require(
+            isEmployer[msg.sender],
+            "Only the employer can add employees."
+        );
 
         addUser(employer, true);
     }
 
     function hireEmployee(address employee) public {
-        require(isEmployer[msg.sender], "Only the employer can add employees.");
+        require(
+            isEmployer[msg.sender],
+            "Only the employer can add employees."
+        );
 
         addUser(employee, false);
     }
@@ -81,6 +99,7 @@ contract PaymentsManager {
             PaymentRequestStatus.PENDING
         );
 
+        emit PaymentRequestNew(paymentRequestID, amount, msg.sender);
         paymentRequestCount++;
     }
 
@@ -107,6 +126,7 @@ contract PaymentsManager {
 
         // todo consider allowance and transferFrom Pattern
         token.transfer(paymentRequest.employee, paymentRequest.amount);
+        emit PaymentRequestAccepted(paymentRequest.employee);
     }
 
     function rejectPaymentRequest(
@@ -129,6 +149,8 @@ contract PaymentsManager {
         paymentRequest.decisionMaker = msg.sender;
         paymentRequest.decisionReason = decisionReason;
         paymentRequest.status = PaymentRequestStatus.REJECTED;
+
+        emit PaymentRequestRejected(paymentRequest.employee);
     }
 
     function getPaymentRequestStatus(uint256 paymentRequestID)
