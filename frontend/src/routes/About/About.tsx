@@ -14,13 +14,7 @@ const About = (): ReactElement => {
   if (status === "loading") {
     return <Loading />;
   }
-  if (status === "auth") {
-    return <AboutPage />;
-  }
-  return <Center minH="91.15vh"><Heading as="h3">
-    Wallet not connected
-  </Heading>
-  </Center>;
+  return <AboutPage />;
 };
 
 export default About;
