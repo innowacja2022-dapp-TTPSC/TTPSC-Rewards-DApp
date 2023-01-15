@@ -1,6 +1,6 @@
-import { Box } from "@chakra-ui/react";
 import { Loading } from "@components/Loading";
 import { NoWalletDetected } from "@components/NoWalletDetected";
+import { MainBox } from "@routes/Root/MainBox/MainBox";
 import { useWalletService } from "@services/WalletService";
 import { ReactElement } from "react";
 
@@ -13,10 +13,7 @@ const Root = (): ReactElement => {
   if (status === "loading") {
     return <Loading />;
   }
-  if (status === "auth") {
-    return <Box>Polaczony</Box>;
-  }
-  return <Box>Nie polaczony</Box>;
+  return <MainBox />;
 };
 
 export default Root;
