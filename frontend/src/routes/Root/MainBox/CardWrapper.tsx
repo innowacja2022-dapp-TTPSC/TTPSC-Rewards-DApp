@@ -1,4 +1,4 @@
-import { Box, Center, Container, Flex, Spacer, Wrap, WrapItem } from "@chakra-ui/react";
+import { Flex } from "@chakra-ui/react";
 import { ReactElement } from "react";
 import { AwardCard } from "./AwardCard";
 
@@ -56,7 +56,6 @@ export const CardWrapper = (): ReactElement => {
           value={cardData.value}
         />
       </Flex>
-
     </>
   );
 };

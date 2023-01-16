@@ -1,9 +1,9 @@
-import { ethers } from "ethers";
+import { BigNumber, ethers } from "ethers";
 
-export async function _updateBalance(
+export const _updateBalance = async (
   _token: ethers.Contract,
   selectedAddress: string
-) {
+): Promise<BigNumber> => {
   const balance = await _token.balanceOf(selectedAddress);
   return { balance };
-}
+};

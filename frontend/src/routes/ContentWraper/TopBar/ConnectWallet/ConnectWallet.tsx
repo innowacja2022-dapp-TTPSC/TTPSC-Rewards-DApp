@@ -1,20 +1,32 @@
-import { ReactElement } from "react";
-import { Box, Button } from "@chakra-ui/react";
+import {
+  Button,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalOverlay,
+  useDisclosure,
+} from "@chakra-ui/react";
 import { useAnonWalletService } from "@services/WalletService";
 import { useMutation } from "@tanstack/react-query";
+import { ReactElement, useState } from "react";
+import { Error } from "./Error/Error";
+import { Loading } from "./Loading/Loading";
 
 export const ConnectWallet = (): ReactElement => {
   const anonService = useAnonWalletService();
-  const { mutate, isError } = useMutation(anonService._connectWallet);
-
+  const [error, setError] = useState<TypeError | undefined>(undefined);
+  const { mutate, isLoading } = useMutation(anonService._connectWallet, {
+    onError: (err: TypeError) => {
+      setError(err);
+    },
+  });
+  const { isOpen, onOpen, onClose } = useDisclosure();
   const handleConnection = () => {
     mutate();
+    onOpen();
   };
-
   return (
     <>
-      {isError && <Box>Error</Box>}
-
       <Button
         _hover={{ bgColor: "purple.400" }}
         bgColor="purple.500"
@@ -25,6 +37,20 @@ export const ConnectWallet = (): ReactElement => {
       >
         Connect Wallet
       </Button>
+      <Modal
+        closeOnEsc={!isLoading}
+        closeOnOverlayClick={!isLoading}
+        isCentered
+        isOpen={isOpen}
+        onClose={onClose}
+      >
+        <ModalOverlay />
+        <ModalContent maxW="lg">
+          <ModalBody>
+            {isLoading ? <Loading /> : error && <Error error={error} />}
+          </ModalBody>
+        </ModalContent>
+      </Modal>
     </>
   );
 };

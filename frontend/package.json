@@ -13,6 +13,7 @@
     "prettier": "prettier --write src/**/*.tsx"
   },
   "dependencies": {
+    "@chakra-ui/icons": "^2.0.16",
     "@chakra-ui/react": "^2.4.6",
     "@tanstack/react-query": "^4.20.9",
     "@types/jest": "^29.2.5",

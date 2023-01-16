@@ -1,16 +1,15 @@
-import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { _initialize } from "@utils/initialize";
+import { _stopPollingData } from "@utils/pollingData";
 import { ethers } from "ethers";
 import {
   createContext,
   ReactElement,
   ReactNode,
   useContext,
+  useEffect,
   useMemo,
+  useState,
 } from "react";
-
-// eslint-disable-next-line @typescript-eslint/naming-convention
-const HARDHAT_NETWORK_ID = 1337;
 
 export type Token = {
   //The info of the token (i.e. It's Name and symbol)
@@ -22,6 +21,7 @@ export type Wallet = {
   _pollDataInterval: NodeJS.Timer;
   _token: ethers.Contract;
   balance: string;
+  isAdmin: boolean;
   selectedAddress: string;
   tokenData: Token;
 };
@@ -32,8 +32,6 @@ export type InitWallet = {
   tokenData: Token;
 };
 
-type WalletKey = ["wallet", string] | ["wallet"];
-
 export type AnonWallet = {
   _connectWallet: () => Promise<void>;
 };
@@ -41,6 +39,7 @@ export type AnonWallet = {
 export type AuthWallet = {
   _disconnectWallet: () => Promise<void>;
   _getAddress: () => string;
+  _isAdmin: () => boolean;
 };
 
 export type WalletServiceValue =
@@ -50,6 +49,7 @@ export type WalletServiceValue =
   | {
       status: "auth";
       value: AuthWallet;
+      wallet: Wallet;
     }
   | {
       status: "anon";
@@ -101,40 +101,33 @@ type Props = {
 };
 
 export const WalletServiceProvider = ({ children }: Props): ReactElement => {
-  const client = useQueryClient();
-
-  const { data } = useQuery(
-    getSessionQueryKey(),
-    async (): Promise<WalletServiceState> => {
-      const authorization = localStorage.getItem("authorization");
-      if (authorization) {
-        if (!window.ethereum) {
-          return Promise.reject(new Error("No MetaMask"));
-        }
-        const wallet = await _initialize();
-        if (wallet) {
-          return Promise.resolve({
-            status: "auth",
-            value: wallet,
-          });
-        }
-        client.setQueryData<WalletServiceState>(getSessionQueryKey(), {
-          status: "anon",
-        });
-        localStorage.removeItem("authorization");
-        return Promise.resolve({
-          status: "anon",
-        });
+  const [data, setData] = useState<WalletServiceState | undefined>({
+    status: "anon",
+  });
+  useEffect(() => {
+    window.ethereum.on("chainChanged", () => {
+      if (data?.status === "auth" && data.value) {
+        _stopPollingData(data.value._pollDataInterval);
       }
+      window.location.reload();
+    });
+    window.ethereum.on("accountsChanged", async (newAddress: string) => {
+      if (data?.status === "auth" && data.value) {
+        _stopPollingData(data.value?._pollDataInterval);
+      }
+      if (newAddress.length === 0) {
+        localStorage.removeItem("authorization");
+        setData({ status: "anon" });
+      } else {
+        const initWallet = await _initialize();
+        if (initWallet) {
+          setData({ status: "auth", value: initWallet });
+        }
+      }
+    });
 
-      return Promise.resolve({ status: "anon" });
-    },
-    {
-      refetchOnMount: false,
-      refetchOnReconnect: false,
-      refetchOnWindowFocus: false,
-    }
-  );
+    return;
+  }, [data]);
 
   const value = useMemo<WalletServiceValue>(() => {
     switch (data?.status) {
@@ -143,41 +136,17 @@ export const WalletServiceProvider = ({ children }: Props): ReactElement => {
           status: "anon",
           value: {
             _connectWallet: async () => {
-              console.log(data?.status);
               if (!window.ethereum) {
                 return Promise.reject(new Error("No MetaMask"));
               }
-              const wallet = await _initialize();
-              if (wallet) {
-                client.setQueryData<WalletServiceState>(getSessionQueryKey(), {
-                  status: "auth",
-                  value: wallet,
-                });
+              const initWallet = await _initialize();
+              if (initWallet) {
+                setData({ status: "auth", value: initWallet });
                 localStorage.setItem("authorization", "auth");
-                console.log(wallet._token.listenerCount());
                 return Promise.resolve();
               }
 
-              return Promise.reject();
-              // We reinitialize it whenever the user changes their account.
-              // window.ethereum.on("accountsChanged", (newAddress: string) => {
-              //   _stopPollingData(_pollDataInterval);
-              //   // `accountsChanged` event can be triggered with an undefined newAddress.
-              //   // This happens when the user removes the Dapp from the "Connected
-              //   // list of sites allowed access to your addresses" (Metamask > Settings > Connections)
-              //   // To avoid errors, we reset the dapp state
-              //   if (newAddress === undefined) {
-              //     throw new Error("no address");
-              //   }
-
-              //   _initialize(newAddress);
-              // });
-
-              // We reset the dapp state if the network is changed
-              // window.ethereum.on("chainChanged", (chainId: string) => {
-              //   _stopPollingData(_pollDataInterval);
-              //   window.location.reload();
-              // });
+              return Promise.reject(new Error("Something went wrong"));
             },
           },
         };
@@ -186,21 +155,24 @@ export const WalletServiceProvider = ({ children }: Props): ReactElement => {
           status: "auth",
           value: {
             _disconnectWallet: () => {
-              client.setQueryData<WalletServiceState>(getSessionQueryKey(), {
-                status: "anon",
-              });
               localStorage.removeItem("authorization");
+              setData({ status: "anon" });
+
               return Promise.resolve();
             },
             _getAddress: () => {
               return data.value.selectedAddress;
             },
+            _isAdmin: () => {
+              return data.value.isAdmin;
+            },
           },
+          wallet: data.value,
         };
       default:
         return { status: "loading" };
     }
-  }, [client, data]);
+  }, [data]);
 
   return (
     <WalletService.Provider value={value}>{children}</WalletService.Provider>

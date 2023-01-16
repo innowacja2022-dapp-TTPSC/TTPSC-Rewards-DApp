@@ -1,12 +1,12 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom";
-import { lazy, Suspense } from "react";
-import { ReactElement } from "react";
 import { paths } from "@utils/paths";
+import { lazy, ReactElement, Suspense } from "react";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { ContentWrapper } from "./ContentWraper/ContentWraper";
 
 const Root = lazy(() => import("./Root/Root"));
 const About = lazy(() => import("./About/About"));
 const Send = lazy(() => import("./Send/Send"));
+const Admin = lazy(() => import("./Admin/Admin"));
 
 export const Router = (): ReactElement => {
   return (
@@ -36,6 +36,14 @@ export const Router = (): ReactElement => {
               </Suspense>
             }
             path={paths.about}
+          />
+          <Route
+            element={
+              <Suspense fallback={null}>
+                <Admin />
+              </Suspense>
+            }
+            path={paths.admin}
           />
         </Route>
       </Routes>
