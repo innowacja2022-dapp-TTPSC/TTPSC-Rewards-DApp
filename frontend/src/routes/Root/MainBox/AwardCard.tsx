@@ -22,7 +22,7 @@ type Props = {
   value: string;
 };
 
-const currency = "MHT";
+const currency = "TTPSC";
 
 export const AwardCard = ({
   title,
