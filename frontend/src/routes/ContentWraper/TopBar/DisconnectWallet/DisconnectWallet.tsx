@@ -6,8 +6,7 @@ import { ReactElement } from "react";
 export const DisconnectWallet = (): ReactElement => {
   const authService = useAuthWalletService();
   const { mutate } = useMutation(authService._disconnectWallet);
-  const data = authService._getAddress();
-
+  const walletAddress = authService._getAddress();
   const handleDisconnect = () => {
     mutate();
   };
@@ -21,7 +20,7 @@ export const DisconnectWallet = (): ReactElement => {
       onClick={() => handleDisconnect()}
       textColor="white"
     >
-      <Text noOfLines={1}>{data}</Text>
+      <Text noOfLines={1}>{walletAddress}</Text>
     </Button>
   );
 };

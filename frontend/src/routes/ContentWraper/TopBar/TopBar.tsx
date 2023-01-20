@@ -1,13 +1,23 @@
 import { Box, Flex, Image } from "@chakra-ui/react";
-import { useWalletService } from "@services/WalletService";
+import { useWalletService, WalletService } from "@services/WalletService";
 import { paths } from "@utils/paths";
-import { ReactElement } from "react";
+import { ReactElement, useContext, useEffect, useState } from "react";
+import { AdminLink } from "./AdminLink/AdminLink";
 import { ConnectWallet } from "./ConnectWallet/ConnectWallet";
 import { DisconnectWallet } from "./DisconnectWallet/DisconnectWallet";
 import { TopBarLink } from "./TopBarLink/TopBarLink";
 
 export const TopBar = (): ReactElement => {
   const status = useWalletService();
+  const context = useContext(WalletService);
+  const [isAdmin, setIsAdmin] = useState(false);
+  useEffect(() => {
+    if (context.status === "auth" && context.wallet.isAdmin) {
+      setIsAdmin(true);
+    } else {
+      setIsAdmin(false);
+    }
+  }, [context]);
   return (
     <Flex
       bgGradient="linear(to-r, #923086 0.18%, #D03A8C 100%)"
@@ -23,6 +33,7 @@ export const TopBar = (): ReactElement => {
         <TopBarLink path={paths.root}>Awards</TopBarLink>
         <TopBarLink path={paths.send}>Send</TopBarLink>
         <TopBarLink path={paths.about}>About</TopBarLink>
+        {isAdmin && <AdminLink path={paths.admin}>Menage</AdminLink>}
       </Flex>
       {status === "anon" ? (
         <Box>

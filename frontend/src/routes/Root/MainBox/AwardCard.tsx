@@ -1,19 +1,19 @@
 import {
+  Box,
+  Button,
+  ButtonGroup,
   Card,
   CardBody,
-  Stack,
-  Heading,
   Divider,
-  ButtonGroup,
-  Button,
-  Image,
-  Text,
   Flex,
-  Box,
+  Heading,
+  Image,
   Spacer,
+  Stack,
+  Text,
 } from "@chakra-ui/react";
-import { useWalletService } from "@services/WalletService";
-import { ReactElement } from "react";
+import { WalletService } from "@services/WalletService";
+import { ReactElement, useContext, useEffect, useState } from "react";
 
 type Props = {
   description: string;
@@ -22,9 +22,7 @@ type Props = {
   value: string;
 };
 
-const currency = "MHT";
-
-let isDisabled = true;
+const currency = "TTPSC";
 
 export const AwardCard = ({
   title,
@@ -32,14 +30,17 @@ export const AwardCard = ({
   value,
   image,
 }: Props): ReactElement => {
-  const status = useWalletService();
-
-  if (status === "auth") {
-    isDisabled = false;
-  }
-
+  const context = useContext(WalletService);
+  const [isDisabled, setIsDisabled] = useState(true);
+  useEffect(() => {
+    if (context.status === "auth") {
+      setIsDisabled(false);
+    } else {
+      setIsDisabled(true);
+    }
+  }, [context.status]);
   return (
-    <Card maxW="xs">
+    <Card bgColor="white" maxW="xs">
       <CardBody>
         <Image
           alt={`${description}, values ${value} ${currency}.`}

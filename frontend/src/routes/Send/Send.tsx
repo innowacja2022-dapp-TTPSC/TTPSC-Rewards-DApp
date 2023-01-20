@@ -1,5 +1,4 @@
-import { Center, Heading } from "@chakra-ui/react";
-import { Loading } from "@components/Loading";
+import { Flex, Heading } from "@chakra-ui/react";
 import { NoWalletDetected } from "@components/NoWalletDetected";
 import { useWalletService } from "@services/WalletService";
 import { ReactElement } from "react";
@@ -11,16 +10,13 @@ const Send = (): ReactElement => {
   if (window.ethereum === undefined) {
     return <NoWalletDetected />;
   }
-  if (status === "loading") {
-    return <Loading />;
-  }
   if (status === "auth") {
     return <SendForm />;
   }
   return (
-    <Center minH="91.15vh">
-      <Heading as="h3">Wallet not connected</Heading>
-    </Center>
+    <Flex alignItems="center" h="full" justifyContent="center" w="full">
+      <Heading>Wallet not connected</Heading>
+    </Flex>
   );
 };
 

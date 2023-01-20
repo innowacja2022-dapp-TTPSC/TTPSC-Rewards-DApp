@@ -3,4 +3,5 @@ export const paths = {
   send: "/send",
   about: "/about",
   notFound: "/notFound",
+  admin: "/admin",
 };

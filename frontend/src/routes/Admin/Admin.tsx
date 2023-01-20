@@ -1,12 +1,12 @@
+import { Box } from "@chakra-ui/react";
 import { NoWalletDetected } from "@components/NoWalletDetected";
-import { MainBox } from "@routes/Root/MainBox/MainBox";
 import { ReactElement } from "react";
 
-const Root = (): ReactElement => {
+const Admin = (): ReactElement => {
   if (window.ethereum === undefined) {
     return <NoWalletDetected />;
   }
-  return <MainBox />;
+  return <Box>Admin</Box>;
 };
 
-export default Root;
+export default Admin;
