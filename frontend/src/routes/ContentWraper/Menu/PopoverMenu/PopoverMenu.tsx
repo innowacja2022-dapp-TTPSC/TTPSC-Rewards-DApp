@@ -18,20 +18,6 @@ type Props = {
     walletAddress: string;
 };
 
-const daytimeBasedMessage = () => {
-    const today = new Date();
-    const curHr = today.getHours();
-
-    if (curHr < 12) {
-        return 'Good morning!';
-    } else if (curHr < 18) {
-        return 'Good afternoon!';
-    } else {
-        return 'Good evening!';
-    }
-}
-
-
 export const commonButtonWidth = '300px';
 
 export const PopoverMenu = ({ disconnectFunction, walletAddress }: Props): ReactElement => {
@@ -47,7 +33,7 @@ export const PopoverMenu = ({ disconnectFunction, walletAddress }: Props): React
                     textColor="white"
                     minWidth={commonButtonWidth}
                 >
-                    {daytimeBasedMessage()}
+                    {walletAddress}
                 </Button>
             </PopoverTrigger>
             <PopoverContent
