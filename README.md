@@ -34,7 +34,7 @@ npx prettier --write 'contracts/**/*.sol'
 
 ```shell
 npx hardhat node
-npx hardhat run scripts/deployToken.js --network localhost && npx hardhat run scripts/deploy.js --network localhost
+npx hardhat run scripts/deploy.js
 ```
 ### Connect to Mumbai network
 
