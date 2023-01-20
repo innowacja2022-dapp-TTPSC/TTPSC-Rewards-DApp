@@ -3,6 +3,7 @@ import {
   Flex,
   Grid,
   GridItem,
+  Spacer,
   Tab,
   TabList,
   TabPanel,
@@ -19,67 +20,65 @@ const selectedTabStyle = { color: "blue.700", bg: "purple.200" };
 
 const ManagePage = (): ReactElement => {
   return (
-    <>
-      <Flex alignItems="center" h="100vh" w="100vw">
-        <Tabs orientation="vertical" variant="soft-rounded">
-          <Grid
-            gap={5}
-            templateColumns="repeat(4, 1fr)"
-            templateRows="repeat(1, 1fr)"
-            w="100vw"
+    <Flex alignItems="center" h="100vh" w="100vw">
+      <Tabs orientation="vertical" variant="soft-rounded">
+        <Flex
+          gap={5}
+          w="100vw"
+        >
+          <GridItem colSpan={1} h="100%" rowSpan={4} flexGrow='1'>
+            <Center h="100%">
+              <TabList
+                alignItems="center"
+                bgColor="blue.500"
+                borderRadius="20px"
+                padding="20px"
+
+              >
+                <Tab _selected={selectedTabStyle} color="white" fontWeight="semibold">
+                  Transactions
+                </Tab>
+                <Tab _selected={selectedTabStyle} color="white" fontWeight="semibold">
+                  Requests
+                </Tab>
+                <Tab _selected={selectedTabStyle} color="white" fontWeight="semibold">
+                  Awards
+                </Tab>
+                <Tab _selected={selectedTabStyle} color="white" fontWeight="semibold">
+                  Users
+                </Tab>
+              </TabList>
+            </Center>
+          </GridItem>
+          <GridItem
+            flexGrow='1'
+            border="1px"
+            borderRadius="30px"
+            colSpan={3}
+            marginRight="30px"
           >
-            <GridItem colSpan={1} h="100%" rowSpan={4}>
-              <Center h="100%">
-                <TabList
-                  alignItems="center"
-                  bgGradient="linear(to-r, #923086 0.18%, #D03A8C 100%)"
-                  borderRadius="20px"
-                  padding="20px"
-                >
-                  <Tab _selected={selectedTabStyle} color="white">
-                    <b>Transactions</b>
-                  </Tab>
-                  <Tab _selected={selectedTabStyle} color="white">
-                    <b>Requests</b>
-                  </Tab>
-                  <Tab _selected={selectedTabStyle} color="white">
-                    <b>Awards</b>
-                  </Tab>
-                  <Tab _selected={selectedTabStyle} color="white">
-                    <b>Users</b>
-                  </Tab>
-                </TabList>
-              </Center>
-            </GridItem>
-            <GridItem
-              border="1px"
-              borderRadius="30px"
-              colSpan={3}
-              marginRight="30px"
-            >
-              <TabPanels>
-                <TabPanel style={{ minHeight: "500px" }}>
-                  {" "}
-                  <TransactionsPanel />
-                </TabPanel>
-                <TabPanel style={{ minHeight: "500px" }}>
-                  {" "}
-                  <RequestsPanel />
-                </TabPanel>
-                <TabPanel style={{ minHeight: "500px" }}>
-                  {" "}
-                  <AwardsPanel />
-                </TabPanel>
-                <TabPanel style={{ minHeight: "500px" }}>
-                  {" "}
-                  <UsersPanel />
-                </TabPanel>
-              </TabPanels>
-            </GridItem>
-          </Grid>
-        </Tabs>
-      </Flex>
-    </>
+            <TabPanels h='100%'>
+              <TabPanel>
+                <TransactionsPanel />
+              </TabPanel>
+              <TabPanel>
+                {" "}
+                <RequestsPanel />
+              </TabPanel>
+              <TabPanel>
+                {" "}
+                <AwardsPanel />
+              </TabPanel>
+              <TabPanel>
+                {" "}
+                <UsersPanel />
+              </TabPanel>
+            </TabPanels>
+          </GridItem>
+          <Spacer flexGrow="1" />
+        </Flex>
+      </Tabs >
+    </Flex >
   );
 };
 

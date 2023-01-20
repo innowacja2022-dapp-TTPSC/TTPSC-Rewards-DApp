@@ -1,8 +1,7 @@
-import { Button, Text } from "@chakra-ui/react";
 import { useAuthWalletService } from "@services/WalletService";
 import { useMutation } from "@tanstack/react-query";
 import { ReactElement } from "react";
-import PopoverMenu from "../PopoverMenu/PopoverMenu";
+import PopoverMenu from "./PopoverMenu/PopoverMenu";
 
 export const DisconnectWallet = (): ReactElement => {
   const authService = useAuthWalletService();

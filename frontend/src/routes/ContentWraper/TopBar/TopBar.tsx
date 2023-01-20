@@ -4,7 +4,7 @@ import { paths } from "@utils/paths";
 import { ReactElement, useContext, useEffect, useState } from "react";
 import { AdminLink } from "./AdminLink/AdminLink";
 import { ConnectWallet } from "./ConnectWallet/ConnectWallet";
-import { DisconnectWallet } from "./DisconnectWallet/DisconnectWallet";
+import { DisconnectWallet } from "../Menu/Menu";
 import { TopBarLink } from "./TopBarLink/TopBarLink";
 
 export const TopBar = (): ReactElement => {

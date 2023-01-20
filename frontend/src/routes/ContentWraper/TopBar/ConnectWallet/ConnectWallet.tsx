@@ -9,7 +9,7 @@ import {
 import { useAnonWalletService } from "@services/WalletService";
 import { useMutation } from "@tanstack/react-query";
 import { ReactElement, useState } from "react";
-import { commonButtonWidth } from "../PopoverMenu/PopoverMenu";
+import { commonButtonWidth } from "../../Menu/PopoverMenu/PopoverMenu";
 import { Error } from "./Error/Error";
 import { Loading } from "./Loading/Loading";
 
