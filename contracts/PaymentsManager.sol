@@ -100,6 +100,7 @@ contract PaymentsManager {
         );
 
         emit PaymentRequestNew(paymentRequestID, amount, msg.sender);
+
         paymentRequestCount++;
     }
 
