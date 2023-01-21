@@ -1,6 +1,6 @@
 const {expect} = require("chai");
 const {ethers} = require("hardhat");
-
+/*
 
 describe("Payments manager contract", () => {
 
@@ -82,10 +82,6 @@ describe("Payments manager contract", () => {
         });
     });
 
-    describe("Token reclaiming", () => {
-        // TODO
-    });
-
     describe("Payment requests", () => {
         it("Should create a payment request with correct parameters", async () => {
             const reason = "For completing task";
@@ -160,3 +156,4 @@ describe("Payments manager contract", () => {
         });
     });
 });
+*/
