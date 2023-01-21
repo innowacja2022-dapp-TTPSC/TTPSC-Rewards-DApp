@@ -18,6 +18,7 @@ contract RewardsManager {
     uint256 rewardCount;
 
     struct Reward {
+        uint256 id;
         string name;
         string imgHash;
         uint256 price;
@@ -75,6 +76,7 @@ contract RewardsManager {
 
         rewardsHashes[hash] = true;
         rewards[rewardCount] = Reward(
+            rewardCount,
             _name,
             _imgHash,
             _price,
