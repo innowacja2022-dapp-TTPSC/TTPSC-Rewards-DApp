@@ -1,6 +1,5 @@
 const {expect} = require("chai");
 const {ethers} = require("hardhat");
-/*
 
 describe("Payments manager contract", () => {
 
@@ -156,4 +155,3 @@ describe("Payments manager contract", () => {
         });
     });
 });
-*/
