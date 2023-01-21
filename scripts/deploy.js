@@ -105,11 +105,12 @@ const saveFrontendFiles = async (token, paymentsManager, rewardsManager) => {
 
 const main = async () =>  {
     if (network.name === "hardhat") {
-        console.warn(
-            "You are trying to deploy a contract to the Hardhat Network, which" +
-            "gets automatically created and destroyed every time. Use the Hardhat" +
-            " option '--network localhost'"
-        );
+        const message = "You are trying to deploy a contract to the Hardhat Network, which" +
+          "gets automatically created and destroyed every time. Use the Hardhat" +
+          " option '--network localhost'"
+
+        console.error(
+          '\x1b[31m\x1b[40m%s\x1b[0m', message);
     }
 
     const token = await deployToken();
