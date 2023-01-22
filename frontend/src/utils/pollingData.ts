@@ -22,11 +22,3 @@ export const _stopPollingData = (
   clearInterval(_pollDataInterval);
   return undefined;
 };
-
-export const _getBalance = (
-  _token: ethers.Contract,
-  selectedAddress: string
-): number => {
-  const balance = _token.balanceOf(selectedAddress);
-  return balance;
-};

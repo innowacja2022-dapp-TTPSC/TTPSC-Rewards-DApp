@@ -4,9 +4,7 @@ import { ReactElement } from "react";
 const AwardsPanel = (): ReactElement => {
   return (
     <>
-      <Box style={{ maxHeight: "468px", overflow: "auto" }}>
-        Awards
-      </Box>
+      <Box style={{ maxHeight: "468px", overflow: "auto" }}>Awards</Box>
     </>
   );
 };

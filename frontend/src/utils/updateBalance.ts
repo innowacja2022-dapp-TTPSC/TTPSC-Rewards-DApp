@@ -5,5 +5,5 @@ export const _updateBalance = async (
   selectedAddress: string
 ): Promise<BigNumber> => {
   const balance = await _token.balanceOf(selectedAddress);
-  return { balance };
+  return Promise.resolve(balance);
 };

@@ -1,18 +1,16 @@
-import { NoWalletDetected } from "@components/NoWalletDetected";
-import { ReactElement } from "react";
-import ManagePage from "./ManagePage";
+import { WalletService } from "@services/WalletService";
+import { paths } from "@utils/paths";
+import { ReactElement, useContext } from "react";
+import { Navigate } from "react-router-dom";
+import { ManagePage } from "./ManagePage/ManagePage";
 
 const Admin = (): ReactElement => {
-  if (window.ethereum === undefined) {
-    /* 
-    
-    Maybe we should check for administrator permissions instead? - suggestion
-    
-    */
-    return <NoWalletDetected />;
+  const context = useContext(WalletService);
+  if (context.status === "auth" && context.wallet.isAdmin) {
+    return <ManagePage />;
   }
 
-  return <ManagePage />;
+  return <Navigate to={paths.root} />;
 };
 
 export default Admin;
