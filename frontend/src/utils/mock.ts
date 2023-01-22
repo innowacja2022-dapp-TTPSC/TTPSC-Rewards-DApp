@@ -1,4 +1,4 @@
-import { Transactions } from "@services/PaymentManagerService";
+import { Transactions } from "@services/RewardManagerService";
 
 export const getTransactionData = (): Transactions[] => {
   const data: Transactions[] = [
@@ -6,6 +6,7 @@ export const getTransactionData = (): Transactions[] => {
       address: "0x46a4fa36a08e584a26dffeac9231d839e428dfac",
       reward: "Allergro 50PLN",
       quantity: "2",
+      id: 5,
     },
   ];
   for (let i = 0; i < 25; i++) {
@@ -13,6 +14,7 @@ export const getTransactionData = (): Transactions[] => {
       address: "0x46a4fa36a08e584a26dffeac9231d839e428dfac",
       reward: "Allergro 50PLN",
       quantity: "2",
+      id: 5,
     });
   }
   return data;

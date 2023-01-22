@@ -1,15 +1,15 @@
 import { TableError } from "@components/TableError/TableError";
 import { tableHead, TableLoading } from "@components/TableLoading/TableLoading";
-import { usePaymentManagerService } from "@services/PaymentManagerService";
+import { useRewardManagerService } from "@services/RewardManagerService";
 import { useQuery } from "@tanstack/react-query";
 import { ReactElement } from "react";
 import { TransactionTable } from "./TransactionTable/TransactionTable";
 
 const TransactionsPanel = (): ReactElement => {
-  const paymentManagerService = usePaymentManagerService();
+  const rewardManagerService = useRewardManagerService();
   const quer = useQuery(
-    paymentManagerService.listKey(),
-    paymentManagerService._getTransactionData
+    rewardManagerService.listKey(),
+    rewardManagerService._getTransactionData
   );
 
   if (quer.status === "loading") {

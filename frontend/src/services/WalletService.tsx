@@ -22,6 +22,7 @@ export type Wallet = {
   _token: ethers.Contract;
   balance: string;
   isAdmin: boolean;
+  provider: ethers.providers.Web3Provider;
   selectedAddress: string;
   tokenData: Token;
 };

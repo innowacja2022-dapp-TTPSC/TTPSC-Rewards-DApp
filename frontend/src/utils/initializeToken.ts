@@ -48,6 +48,7 @@ export const _initializeToken = async (): Promise<Wallet | undefined> => {
   }
 
   return {
+    provider,
     _token,
     tokenData,
     _pollDataInterval,

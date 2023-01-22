@@ -1,6 +1,9 @@
 import { Table, Tbody, Td, Th, Thead, Tr } from "@chakra-ui/react";
 import { ScrollArea } from "@components/ScrollArea/ScrollArea";
-import { Transactions } from "@services/PaymentManagerService";
+import {
+  Transactions,
+  useRewardManagerService,
+} from "@services/RewardManagerService";
 import {
   ColumnDef,
   flexRender,
@@ -8,13 +11,15 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { Fragment, ReactElement } from "react";
-import Received from "./Received/Received";
+import { Received } from "./Received/Received";
 
 type Props = {
   data: Transactions[];
 };
 
 export const TransactionTable = ({ data }: Props): ReactElement => {
+  const rewardManagerService = useRewardManagerService();
+
   const columns: ColumnDef<Transactions>[] = [
     { accessorKey: "address", header: "From" },
     { accessorKey: "reward", header: "Reward" },
@@ -23,7 +28,12 @@ export const TransactionTable = ({ data }: Props): ReactElement => {
       accessorKey: "manage",
       header: "Manage",
       cell: ({ row }) => {
-        return <Received transaction={row.original} />;
+        return (
+          <Received
+            rewardManagerService={rewardManagerService}
+            transaction={row.original}
+          />
+        );
       },
     },
   ];

@@ -14,18 +14,58 @@ import {
   NumberInputStepper,
   Text,
   useDisclosure,
+  useToast,
 } from "@chakra-ui/react";
-import { Transactions } from "@services/PaymentManagerService";
+import {
+  RewardManagerServiceValue,
+  Transactions,
+} from "@services/RewardManagerService";
+import { useMutation } from "@tanstack/react-query";
 import { ReactElement, useState } from "react";
 
 type Props = {
+  rewardManagerService: RewardManagerServiceValue;
   transaction: Transactions;
 };
 
-const Received = ({ transaction }: Props): ReactElement => {
+export const Received = ({
+  transaction,
+  rewardManagerService,
+}: Props): ReactElement => {
   const [value, setValue] = useState(1);
   const handleChange = (value: number) => {
     setValue(value);
+  };
+  const { mutate } = useMutation(rewardManagerService._markCollected);
+  const toast = useToast();
+  const handleSubmit = () => {
+    mutate(
+      {
+        address: transaction.address,
+        quantity: Number(transaction.quantity),
+        id: transaction.id,
+      },
+      {
+        onError: () => {
+          toast({
+            title: "Error",
+            description: "Failed to collect the award",
+            status: "error",
+            duration: 5000,
+            isClosable: true,
+          });
+        },
+        onSuccess: () => {
+          toast({
+            title: "Whooo",
+            description: "The award has been collected",
+            status: "success",
+            duration: 5000,
+            isClosable: true,
+          });
+        },
+      }
+    );
   };
   const { isOpen, onOpen, onClose } = useDisclosure();
   return (
@@ -72,11 +112,12 @@ const Received = ({ transaction }: Props): ReactElement => {
             <Button colorScheme="blue" mr={3} onClick={onClose}>
               Close
             </Button>
-            <Button variant="secondary">Submit</Button>
+            <Button onClick={handleSubmit} variant="secondary">
+              Submit
+            </Button>
           </ModalFooter>
         </ModalContent>
       </Modal>
     </>
   );
 };
-export default Received;
