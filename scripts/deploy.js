@@ -1,31 +1,131 @@
-// We require the Hardhat Runtime Environment explicitly here. This is optional
-// but useful for running the script in a standalone fashion through `node <script>`.
-//
-// You can also run a script with `npx hardhat run <script>`. If you do that, Hardhat
-// will compile your contracts, add the Hardhat Runtime Environment's members to the
-// global scope, and execute the script.
 
+const { ethers } = require("hardhat");
+const path = require("path");
+const fs = require("fs");
 
-async function main() {
-    const currentTimestampInSeconds = Math.round(Date.now() / 1000);
-    const ONE_YEAR_IN_SECS = 365 * 24 * 60 * 60;
-    const unlockTime = currentTimestampInSeconds + ONE_YEAR_IN_SECS;
+// Arguments required to deploy the TTPSC token contract
+const tokenArgs = {TOKEN_NAME: "TTPSC token", TOKEN_SYMBOL: "TTPSC", INITIAL_SUPPLY: "100000"}
 
-    const lockedAmount = ethers.utils.parseEther("1");
+/*
+Function that deploys TTPSC token contract
+RETURN: TTPSC token
+*/
+const deployToken = async () => {
 
-    const Lock = await ethers.getContractFactory("Lock");
-    const lock = await Lock.deploy(unlockTime, {value: lockedAmount});
+    const initialSupplyEther = ethers.utils.parseEther(tokenArgs.INITIAL_SUPPLY);
 
-    await lock.deployed();
+    const Token = await ethers.getContractFactory("TTPSC");
+    const ttpscToken = await Token.deploy(
+        tokenArgs.TOKEN_NAME,
+        tokenArgs.TOKEN_SYMBOL,
+        initialSupplyEther
+    );
 
-    console.log(
-        `Lock with 1 ETH and unlock timestamp ${unlockTime} deployed to ${lock.address}`
+    await ttpscToken.deployed();
+    console.log("TTPSC token deployed at address: ", ttpscToken.address);
+
+    return ttpscToken;
+}
+
+/*
+Function that deploys payment manager contract and transfers funds to its address
+PARAM: TTPSC token contract
+RETURN: payment manager contract
+*/
+const deployPaymentsManager = async token => {
+    
+    const initialSupplyEther = ethers.utils.parseEther(tokenArgs.INITIAL_SUPPLY);
+
+    const PaymentsManager = await ethers.getContractFactory("PaymentsManager");
+    const paymentsManager = await PaymentsManager.deploy(token.address);
+
+    await paymentsManager.deployed();
+    console.log("Payments manager contract deployed at address: ", paymentsManager.address);
+
+    await token.transfer(paymentsManager.address, initialSupplyEther);
+    console.log(tokenArgs.INITIAL_SUPPLY, "tokens transfered to payment manager");
+
+    return paymentsManager;
+}
+
+/*
+Function that deploys rewards manager contract
+PARAM: payments manager
+RETURN: rewards manager contract
+*/
+const deployRewardsManager = async paymentsManager => {
+
+    const RewardsManager = await ethers.getContractFactory("RewardsManager");
+    const rewardsManager = await RewardsManager.deploy(paymentsManager.address);
+
+    await rewardsManager.deployed();
+    console.log("Rewards manager contract deployed at address: ", rewardsManager.address);
+
+    return rewardsManager;
+}
+
+/*
+Function that moves built json files from artifacts directory to frontend
+PARAM: TTPSC toke, payments manager, rewards manager
+*/
+const saveFrontendFiles = async (token, paymentsManager, rewardsManager) => {
+
+    const contractsDir = path.join(__dirname, "..", "frontend", "src", "contracts");
+
+    if (!fs.existsSync(contractsDir)) {
+        fs.mkdirSync(contractsDir);
+    }
+
+    fs.writeFileSync(
+        path.join(contractsDir, "contract-address.json"),
+        JSON.stringify(
+            {Token: token.address, PaymentsManager: paymentsManager.address, RewardsManager: rewardsManager.address}, undefined, 2)
+    );
+
+    const TokenArtifact = artifacts.readArtifactSync("TTPSC");
+    const PaymentsManagerArtifact = artifacts.readArtifactSync("PaymentsManager");
+    const RewardsManagerArtifact = artifacts.readArtifactSync("RewardsManager");
+
+    fs.writeFileSync(
+        path.join(contractsDir, "Token.json"),
+        JSON.stringify(TokenArtifact, null, 2)
+    );
+
+    fs.writeFileSync(
+        path.join(contractsDir, "PaymentsManager.json"),
+        JSON.stringify(PaymentsManagerArtifact, null, 2)
+    );
+
+    fs.writeFileSync(
+        path.join(contractsDir, "RewardsManager.json"),
+        JSON.stringify(RewardsManagerArtifact, null, 2)
     );
 }
 
-// We recommend this pattern to be able to use async/await everywhere
-// and properly handle errors.
-main().catch((error) => {
-    console.error(error);
-    process.exitCode = 1;
-});
+
+const main = async () =>  {
+    if (network.name === "hardhat") {
+        const message = "You are trying to deploy a contract to the Hardhat Network, which" +
+          "gets automatically created and destroyed every time. Use the Hardhat" +
+          " option '--network localhost'"
+
+        console.error(
+          '\x1b[31m\x1b[40m%s\x1b[0m', message);
+    }
+
+    const token = await deployToken();
+    const paymentsManager = await deployPaymentsManager(token);
+    const rewardsManager = await deployRewardsManager(paymentsManager);
+
+    console.log("All contracts deployed succesfully");
+
+    await saveFrontendFiles(token, paymentsManager, rewardsManager);
+
+    console.log("All frontend files successfully saved");
+}
+
+main()
+    .catch((error) => {
+        console.error(error);
+        process.exit(1);
+    });

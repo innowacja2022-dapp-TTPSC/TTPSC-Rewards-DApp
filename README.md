@@ -11,30 +11,18 @@ smart contracts and cryptocurrency.
     NodeJS > 16.x
     Metamask
 
-### Project is developed with hardhat
-
-Try running some of the following tasks:
-
-```shell
-npx hardhat help
-npx hardhat test
-REPORT_GAS=true npx hardhat test
-npx hardhat node
-npx hardhat run scripts/deploy.js
-```
-
-Format your .sol files
-```shell
-npx prettier --write 'contracts/**/*.sol'
-```
-
 ## Quick start
 
-### Setup blockchain and deploy token smart contract on this blockchain
+### Setup blockchain and deploy token smart contract
 
+To run locally:
 ```shell
 npx hardhat node
-npx hardhat run scripts/deployToken.js --network localhost && npx hardhat run scripts/deploy.js --network localhost
+npx hardhat run scripts/deploy.js --netowrk localhost
+```
+To run on remote network like mumbai fill your .env file with private key and network data
+```shell
+npx hardhat run scripts/deploy.js --netowrk mumbai
 ```
 ### Connect to Mumbai network
 
@@ -69,3 +57,21 @@ npm run dev
 4. Optionally you can add token to metamask to see balance. Do it using token smart contract address.
 
 For more hardhat tips check [HardHat tutorial](https://hardhat.org/tutorial/testing-contracts)
+
+
+### Project is developed with hardhat
+
+Example how to run some tasks using hardhat:
+
+```shell
+npx hardhat help
+npx hardhat test
+REPORT_GAS=true npx hardhat test
+npx hardhat node
+npx hardhat run scripts/deploy.js --netowrk localhost
+```
+
+Format your .sol files
+```shell
+npx prettier --write 'contracts/**/*.sol'
+```

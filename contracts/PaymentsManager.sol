@@ -81,6 +81,7 @@ contract PaymentsManager {
     }
 
     function createPaymentRequest(
+        address recipient,
         uint256 amount,
         string memory paymentRequestReason
     ) public {
@@ -88,10 +89,18 @@ contract PaymentsManager {
             !isEmployer[msg.sender],
             "Only employees can create paymentRequests."
         );
+        require(
+            isCurrentEmployee[recipient],
+            "The employee you recommend must be current employee"
+        );
+        require(
+            recipient != msg.sender,
+            "You cannot give yourself a bonus"
+        );
 
         uint256 paymentRequestID = paymentRequestCount;
         paymentRequests[paymentRequestID] = PaymentRequest(
-            msg.sender,
+            recipient,
             amount,
             paymentRequestReason,
             address(0),
@@ -178,11 +187,17 @@ contract PaymentsManager {
         return paymentRequests[paymentRequestID].amount;
     }
 
-    function getPaymentRequestHistory() public view returns (uint256[] memory) {
-        uint256[] memory history = new uint256[](paymentRequestCount);
+    function getPaymentRequestHistory()
+    public
+    view
+    returns (PaymentRequest[] memory)
+    {
+        PaymentRequest[] memory paymentRequestArray = new PaymentRequest[](
+            paymentRequestCount
+        );
         for (uint256 i = 0; i < paymentRequestCount; i++) {
-            history[i] = i;
+            paymentRequestArray[i] = paymentRequests[i];
         }
-        return history;
+        return paymentRequestArray;
     }
 }
