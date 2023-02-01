@@ -52,26 +52,33 @@ describe("Rewards manager contract", async () => {
 
     describe("Adding rewards", () => {
 
-        const shop = "Allegro";
         const name = "giftcard";
         const imgHash = "#";
-        const value = 10;
         const price = 100;
         const inStock = 5;
 
         it("Should emit a new reward", async () => {
-            await expect(rewardsManager.addReward(shop, name, imgHash, value, price, inStock))
-                .to.emit(rewardsManager, "NewReward").withArgs(shop, name, value, price, inStock);
+            await expect(rewardsManager.addReward(name, imgHash, price, inStock))
+                .to.emit(rewardsManager, "NewReward").withArgs(name, price, inStock);
         });
 
         it("Should throw error when adding reward as an employee", async () => {
-            await expect(rewardsManager.connect(employeeAddress).addReward(shop, name, imgHash, value, price, inStock))
+            await expect(rewardsManager.connect(employeeAddress).addReward(name, imgHash, price, inStock))
                 .to.be.revertedWith("Only employer can add new reward.");
         });
 
-        it("Should throw error when adding reward with the same name, value and shop", async () => {
-            await expect(rewardsManager.addReward(shop, name, imgHash, value, price, inStock))
-                .to.be.revertedWith("A reward with the same name, value and shop already exists");
+        it("Should return added reward with correct parameters", async () => {
+            const rewards = await rewardsManager.getAllRewards();
+            expect(rewards).to.have.lengthOf(1);
+            expect(rewards[0].name).to.equal(name);
+            expect(rewards[0].imgHash).to.equal(imgHash);
+            expect(rewards[0].price).to.equal(price);
+            expect(rewards[0].inStock).to.equal(inStock);
+        });
+
+        it("Should throw error when adding reward with the same name", async () => {
+            await expect(rewardsManager.addReward(name, imgHash, price, inStock))
+                .to.be.revertedWith("A reward with the same name already exists");
         });
         
     });

@@ -37,12 +37,12 @@ describe("Payments manager contract", () => {
     });
 
     describe("Deployment", () => {
-        it("Should set the right token address", async function() {
+        it("Should set the right token address", async () => {
             const tokenAddressInManager = await paymentsManager.token();
             expect(tokenAddressInManager).to.equal(ttpscToken.address);
         });
 
-        it("Should mark the token owner as employer", async function() {
+        it("Should mark the token owner as employer", async () => {
             const isTokenOwnerEmployer = await paymentsManager.isEmployer(ttpscToken.owner());
             expect(isTokenOwnerEmployer).to.equal(true);
         });
@@ -87,7 +87,7 @@ describe("Payments manager contract", () => {
         });
     });
 
-    describe("Payment requests", function() {
+    describe("Payment requests", () => {
 
         beforeEach(async () => {
             const token = await ethers.getContractFactory("TTPSC");
@@ -103,7 +103,7 @@ describe("Payments manager contract", () => {
             await paymentsManager.hireEmployee(employee2Address.address);
         });
 
-        it("Should create a payment request with correct parameters", async function() {
+        it("Should create a payment request with correct parameters", async () => {
             const reason = "For completing task";
             const amount = 1;
             const expectedStatus = 0;
@@ -147,17 +147,17 @@ describe("Payments manager contract", () => {
         });
 
         it("Should throw error if creating payment request as an employer", async () => {
-            await expect(paymentsManager.createPaymentRequest(1, "For completing task"))
+            await expect(paymentsManager.createPaymentRequest(employeeAddress.address, 1, "For completing task"))
                 .to.be.revertedWith("Only employees can create paymentRequests.");
         });
 
-        it("Should throw error if payment request recipient is not an employee", async function() {
+        it("Should throw error if payment request recipient is not an employee", async () => {
             const randomWalletAddress = ethers.Wallet.createRandom().address;
             await expect(paymentsManager.connect(employeeAddress).createPaymentRequest(randomWalletAddress, 1, "To be or not to be"))
                 .to.be.revertedWith("The employee you recommend must be current employee");
         });
 
-        it("Should throw error if payment request recipient is same as msg.address", async function() {
+        it("Should throw error if payment request recipient is same as msg.address", async () => {
             await expect(paymentsManager.connect(employeeAddress).createPaymentRequest(employeeAddress.address, 1, "To be or not to be"))
                 .to.be.revertedWith("You cannot give yourself a bonus");
         });
