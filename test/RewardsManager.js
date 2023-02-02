@@ -2,6 +2,7 @@
 const {expect} = require("chai");
 const {ethers} = require("hardhat");
 
+const tokenArgs = {TOKEN_NAME: "TTPSC token", TOKEN_SYMBOL: "TTPSC", INITIAL_SUPPLY: ethers.utils.parseUnits("100", "ether")};
 
 describe("Rewards manager contract", async () => {
 
@@ -10,31 +11,20 @@ describe("Rewards manager contract", async () => {
     let rewardsManager;
     let employeeAddress;
 
-    before(async () => {
-
-        const contractArgs = {TOKEN_NAME: "TTPSC token", TOKEN_SYMBOL: "TTPSC", INITIAL_SUPPLY: ethers.utils.parseUnits("100", "ether")};
+    beforeEach(async () => {
         const Token = await ethers.getContractFactory("TTPSC");
-
         token = await Token.deploy(
-            contractArgs.TOKEN_NAME,
-            contractArgs.TOKEN_SYMBOL,
-            contractArgs.INITIAL_SUPPLY
+            tokenArgs.TOKEN_NAME,
+            tokenArgs.TOKEN_SYMBOL,
+            tokenArgs.INITIAL_SUPPLY
         );
-
         const PaymentsManager = await ethers.getContractFactory("PaymentsManager");
-
-        // ADDR1 IS FOR TESTING FUNCTIONS THAT REQUIRE EMPLOYEE STATUS
         const [owner, addr1] = await ethers.getSigners();
-        
         paymentsManager = await PaymentsManager.deploy(token.address);
-
-        await token.transfer(paymentsManager.address, contractArgs.INITIAL_SUPPLY);
+        await token.transfer(paymentsManager.address, tokenArgs.INITIAL_SUPPLY);
         employeeAddress = addr1;
-
         await paymentsManager.hireEmployee(employeeAddress.address);
-
         const RewardsManager = await ethers.getContractFactory("RewardsManager");
-
         rewardsManager = await RewardsManager.deploy(paymentsManager.address);
     });
 
@@ -50,7 +40,7 @@ describe("Rewards manager contract", async () => {
         });
     });
 
-    describe("Adding rewards", () => {
+    describe("Rewards", () => {
 
         const name = "giftcard";
         const imgHash = "#";
@@ -67,20 +57,62 @@ describe("Rewards manager contract", async () => {
                 .to.be.revertedWith("Only employer can add new reward.");
         });
 
-        it("Should return added reward with correct parameters", async () => {
+        it("Should return empty array if no reward was added", async () => {
+            const rewards = await rewardsManager.getAllRewards();
+            expect(rewards).to.have.lengthOf(0);
+        });
+
+        it("Should return reward with correct parameters", async () => {
+            await rewardsManager.addReward(name, imgHash, price, inStock);
             const rewards = await rewardsManager.getAllRewards();
             expect(rewards).to.have.lengthOf(1);
             expect(rewards[0].name).to.equal(name);
             expect(rewards[0].imgHash).to.equal(imgHash);
             expect(rewards[0].price).to.equal(price);
             expect(rewards[0].inStock).to.equal(inStock);
+            expect(rewards[0].id).to.equal(0);
         });
 
-        it("Should throw error when adding reward with the same name", async () => {
+        it("Should return correct reward count", async () => {
+            const rewardsCount = 30;
+            for(let i = 0;i<rewardsCount;i++) {
+                await rewardsManager.addReward(name + i, imgHash, price, inStock);
+            }
+            const rewards = await rewardsManager.getAllRewards();
+            expect(rewards).to.have.lengthOf(rewardsCount);
+        });
+
+        it("Should return error when adding reward with the same name", async () => {
+            await rewardsManager.addReward(name, imgHash, price, inStock);
             await expect(rewardsManager.addReward(name, imgHash, price, inStock))
                 .to.be.revertedWith("A reward with the same name already exists");
         });
+
+        it("Should throw error when changing reward stock as employee", async () => {
+            await rewardsManager.addReward(name, imgHash, price, inStock);
+            const rewards = await rewardsManager.getAllRewards();
+            expect(rewardsManager.connect(employeeAddress).changeInStock(rewards[0].id, 10))
+                .to.be.revertedWith("Only employer can change stock count.");
+        });
+
+        it("Should emit in stock changed event", async () => {
+            await rewardsManager.addReward(name, imgHash, price, inStock);
+            const rewards = await rewardsManager.getAllRewards();
+            expect(rewardsManager.changeInStock(rewards[0].id, 10))
+                .to.emit(rewardsManager, "InStockChanged").withArgs(rewards[0].id, 10);
+        });
+
+        it("Should return correct in stock count for added reward", async () => {
+            await rewardsManager.addReward(name, imgHash, price, inStock);
+            const rewards = await rewardsManager.getAllRewards();
+            const setInStock = await rewardsManager.getInStock(rewards[0].id);
+            expect(setInStock).to.equal(inStock);
+        });
         
+    });
+
+    describe("Placing orders", () => {
+        // TO BE CONTINUED
     });
     
 });
