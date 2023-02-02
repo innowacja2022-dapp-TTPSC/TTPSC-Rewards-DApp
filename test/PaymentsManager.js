@@ -30,7 +30,6 @@ describe("Payments manager contract", () => {
         employeeAddress = addr1;
         employee2Address = addr2;
         paymentsManager = await manager.deploy(ttpscToken.address);
-
         await ttpscToken.transfer(paymentsManager.address, contractArgs.INITIAL_SUPPLY);
         await paymentsManager.hireEmployee(employeeAddress.address);
         await paymentsManager.hireEmployee(employee2Address.address);
