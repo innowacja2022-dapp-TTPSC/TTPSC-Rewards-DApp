@@ -1,31 +1,44 @@
-const {expect} = require("chai");
-const {ethers} = require("hardhat");
+const { expect } = require("chai");
+const { ethers } = require("hardhat");
 
 
-describe("Payments manager contract", function () {
+describe("Payments manager contract", function() {
 
     let paymentsManager;
     let ttpscToken;
     let employeeAddress;
+    let employee2Address;
+    let manager;
+
+    const contractArgs = {
+        TOKEN_NAME: "TTPSC token",
+        TOKEN_SYMBOL: "TTPSC",
+        INITIAL_SUPPLY: ethers.utils.parseUnits("10", "ether")
+    };
 
     before(async function() {
         const token = await ethers.getContractFactory("TTPSC");
-        const contractArgs = {TOKEN_NAME: "TTPSC token", TOKEN_SYMBOL: "TTPSC", INITIAL_SUPPLY: ethers.utils.parseUnits("10", "ether")}
+
         ttpscToken = await token.deploy(
             contractArgs.TOKEN_NAME,
             contractArgs.TOKEN_SYMBOL,
             contractArgs.INITIAL_SUPPLY
         );
-        const manager = await ethers.getContractFactory("PaymentsManager");
+
+        manager = await ethers.getContractFactory("PaymentsManager");
         // ADDR1 IS FOR TESTING FUNCTIONS THAT REQUIRE EMPLOYEE STATUS
-        const [owner, addr1] = await ethers.getSigners();
+        const [owner, addr1, addr2] = await ethers.getSigners();
+        employeeAddress = addr1;
+        employee2Address = addr2;
         paymentsManager = await manager.deploy(ttpscToken.address);
         await ttpscToken.transfer(paymentsManager.address, contractArgs.INITIAL_SUPPLY);
-        employeeAddress = addr1;
         await paymentsManager.hireEmployee(employeeAddress.address);
+        await paymentsManager.hireEmployee(employee2Address.address);
     });
 
-    describe("Deployment", function () {
+
+
+    describe("Deployment", function() {
         it("Should set the right token address", async function() {
             const tokenAddressInManager = await paymentsManager.token();
             expect(tokenAddressInManager).to.equal(ttpscToken.address);
@@ -54,7 +67,6 @@ describe("Payments manager contract", function () {
 
         it("Should fire employee", async function() {
             const randomWalletAddress = ethers.Wallet.createRandom().address;
-            const [x] = await ethers.getSigners();
             await paymentsManager.hireEmployee(randomWalletAddress);
 
             let isCurrentEmployee = await paymentsManager.isCurrentEmployee(randomWalletAddress);
@@ -77,17 +89,28 @@ describe("Payments manager contract", function () {
         });
     });
 
-    describe("Token reclaiming", function() {
-        // TODO
-    });
-
     describe("Payment requests", function() {
+
+        beforeEach(async () => {
+            const token = await ethers.getContractFactory("TTPSC");
+
+            ttpscToken = await token.deploy(
+                contractArgs.TOKEN_NAME,
+                contractArgs.TOKEN_SYMBOL,
+                contractArgs.INITIAL_SUPPLY
+            );
+            paymentsManager = await manager.deploy(ttpscToken.address);
+            await ttpscToken.transfer(paymentsManager.address, contractArgs.INITIAL_SUPPLY);
+            await paymentsManager.hireEmployee(employeeAddress.address);
+            await paymentsManager.hireEmployee(employee2Address.address);
+        });
+
         it("Should create a payment request with correct parameters", async function() {
             const reason = "For completing task";
             const amount = 1;
             const expectedStatus = 0;
             const requestId = await paymentsManager.paymentRequestCount();
-            await paymentsManager.connect(employeeAddress).createPaymentRequest(amount, reason);
+            await paymentsManager.connect(employeeAddress).createPaymentRequest(employee2Address.address, amount, reason);
 
             const requestStatus = Number(await paymentsManager.getPaymentRequestStatus(requestId));
             const requestAmount = await paymentsManager.getPaymentRequestAmount(requestId);
@@ -103,13 +126,13 @@ describe("Payments manager contract", function () {
             const amount = 10;
             const expectedStatus = 1;
             const requestId = await paymentsManager.paymentRequestCount();
-            await paymentsManager.connect(employeeAddress).createPaymentRequest(amount, reason);
-            
+            await paymentsManager.connect(employeeAddress).createPaymentRequest(employee2Address.address, amount, reason);
+
             await paymentsManager.acceptPaymentRequest(requestId, "Task is well done");
             const requestStatus = Number(await paymentsManager.getPaymentRequestStatus(requestId));
 
             expect(requestStatus).to.equal(expectedStatus);
-            expect(await ttpscToken.balanceOf(employeeAddress.address)).to.equal(amount);
+            expect(await ttpscToken.balanceOf(employee2Address.address)).to.equal(amount);
         });
 
         it("Should reject a payment request", async function() {
@@ -117,8 +140,8 @@ describe("Payments manager contract", function () {
             const amount = 1;
             const expectedStatus = 2;
             const requestId = await paymentsManager.paymentRequestCount();
-            await paymentsManager.connect(employeeAddress).createPaymentRequest(amount, reason);
-            
+            await paymentsManager.connect(employeeAddress).createPaymentRequest(employee2Address.address, amount, reason);
+
             await paymentsManager.rejectPaymentRequest(requestId, "Task is not well done");
             const requestStatus = Number(await paymentsManager.getPaymentRequestStatus(requestId));
 
@@ -126,13 +149,24 @@ describe("Payments manager contract", function () {
         });
 
         it("Should throw error if creating payment request as an employer", async function() {
-            await expect(paymentsManager.createPaymentRequest(1, "For completing task"))
+            await expect(paymentsManager.createPaymentRequest(employeeAddress.address, 1, "For completing task"))
                 .to.be.revertedWith("Only employees can create paymentRequests.");
+        });
+
+        it("Should throw error if payment request recipient is not an employee", async function() {
+            const randomWalletAddress = ethers.Wallet.createRandom().address;
+            await expect(paymentsManager.connect(employeeAddress).createPaymentRequest(randomWalletAddress, 1, "To be or not to be"))
+                .to.be.revertedWith("The employee you recommend must be current employee");
+        });
+
+        it("Should throw error if payment request recipient is same as msg.address", async function() {
+            await expect(paymentsManager.connect(employeeAddress).createPaymentRequest(employeeAddress.address, 1, "To be or not to be"))
+                .to.be.revertedWith("You cannot give yourself a bonus");
         });
 
         it("Should throw error if accepting or rejecting payment request as an employee", async function() {
             const requestId = await paymentsManager.paymentRequestCount();
-            await paymentsManager.connect(employeeAddress).createPaymentRequest(1, "For completing task");
+            await paymentsManager.connect(employeeAddress).createPaymentRequest(employee2Address.address, 1, "For completing task");
             await expect(paymentsManager.connect(employeeAddress).acceptPaymentRequest(requestId, "Ok"))
                 .to.be.revertedWith("Only employers can decide on paymentRequests .");
             await expect(paymentsManager.connect(employeeAddress).rejectPaymentRequest(requestId, "No"))
@@ -141,17 +175,30 @@ describe("Payments manager contract", function () {
 
         it("Should throw error if trying to change already established payment request status", async function() {
             const requestId = await paymentsManager.paymentRequestCount();
-            await paymentsManager.connect(employeeAddress).createPaymentRequest(1, "For completing task");
+            await paymentsManager.connect(employeeAddress).createPaymentRequest(employee2Address.address, 1, "For completing task");
             await paymentsManager.acceptPaymentRequest(requestId, "Task is well done");
             await expect(paymentsManager.rejectPaymentRequest(requestId, "Task is not well done"))
                 .to.be.revertedWith("This paymentRequest has already been decided on.");
         });
 
-        it("Should return all created payment requests ids", async function() {
-            // IT WILL RETURN ALL REQUESTS CREATED WITHIN PREVIOUS TESTS (SO 5)
-            const expectedRequestsAmount = 5;
-            const requests = await paymentsManager.getPaymentRequestHistory();
-            expect(requests.length).to.equal(expectedRequestsAmount);
+        it("should return an array of all payment requests", async () => {
+            await paymentsManager.connect(employeeAddress).createPaymentRequest(employee2Address.address, 100, "test reason");
+            await paymentsManager.connect(employeeAddress).createPaymentRequest(employee2Address.address, 200, "test reason 2");
+
+            const paymentRequests = await paymentsManager.getPaymentRequestHistory();
+
+            expect(paymentRequests).to.have.lengthOf(2);
+            expect(paymentRequests[0].amount.toNumber()).to.equal(100);
+            expect(paymentRequests[1].amount.toNumber()).to.equal(200);
         });
+
+        it('should return an empty array if no payment requests have been made', async () => {
+            const actual = await paymentsManager.getPaymentRequestHistory();
+            const expected = [];
+
+            expect(actual).to.have.lengthOf(0);
+            expect(actual).to.deep.equal(expected);
+        });
+
     });
 });

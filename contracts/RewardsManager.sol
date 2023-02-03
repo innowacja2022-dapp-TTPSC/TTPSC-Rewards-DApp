@@ -18,10 +18,9 @@ contract RewardsManager {
     uint256 rewardCount;
 
     struct Reward {
-        string shop;
+        uint256 id;
         string name;
         string imgHash;
-        uint32 value;
         uint256 price;
         uint256 inStock;
     }
@@ -37,9 +36,7 @@ contract RewardsManager {
         uint256 _quantity
     );
     event NewReward(
-        string _shop,
         string name,
-        uint32 value,
         uint256 price,
         uint256 inStock
     );
@@ -61,10 +58,8 @@ contract RewardsManager {
     }
 
     function addReward(
-        string memory _shop,
         string memory _name,
         string memory _imgHash,
-        uint32 _value,
         uint256 _price,
         uint256 _inStock
     ) public {
@@ -73,25 +68,24 @@ contract RewardsManager {
             "Only employer can add new reward."
         );
 
-        bytes32 hash = keccak256(abi.encodePacked(_name, _value, _shop));
+        bytes32 hash = keccak256(abi.encodePacked(_name));
         require(
             !rewardsHashes[hash],
-            "A reward with the same name, value and shop already exists"
+            "A reward with the same name already exists"
         );
 
         rewardsHashes[hash] = true;
         rewards[rewardCount] = Reward(
-            _shop,
+            rewardCount,
             _name,
             _imgHash,
-            _value,
             _price,
             _inStock
         );
 
         rewardCount++;
 
-        emit NewReward(_shop, _name, _value, _price, _inStock);
+        emit NewReward(_name, _price, _inStock);
     }
 
     function changeInStock(uint256 _rewardId, uint256 _inStock) public {
