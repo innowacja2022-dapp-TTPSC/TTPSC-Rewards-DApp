@@ -10,6 +10,13 @@ describe("Rewards manager contract", async () => {
     let paymentsManager;
     let rewardsManager;
     let employeeAddress;
+    let employee2Address;
+
+    // REWARD DATA
+    const name = "giftcard";
+    const imgHash = "#";
+    const price = 100;
+    const inStock = 5;
 
     beforeEach(async () => {
         const Token = await ethers.getContractFactory("TTPSC");
@@ -19,11 +26,13 @@ describe("Rewards manager contract", async () => {
             tokenArgs.INITIAL_SUPPLY
         );
         const PaymentsManager = await ethers.getContractFactory("PaymentsManager");
-        const [owner, addr1] = await ethers.getSigners();
+        const [owner, addr1, addr2] = await ethers.getSigners();
         paymentsManager = await PaymentsManager.deploy(token.address);
         await token.transfer(paymentsManager.address, tokenArgs.INITIAL_SUPPLY);
         employeeAddress = addr1;
+        employee2Address = addr2;
         await paymentsManager.hireEmployee(employeeAddress.address);
+        await paymentsManager.hireEmployee(employee2Address.address);
         const RewardsManager = await ethers.getContractFactory("RewardsManager");
         rewardsManager = await RewardsManager.deploy(paymentsManager.address);
     });
@@ -41,11 +50,6 @@ describe("Rewards manager contract", async () => {
     });
 
     describe("Rewards", () => {
-
-        const name = "giftcard";
-        const imgHash = "#";
-        const price = 100;
-        const inStock = 5;
 
         it("Should emit a new reward", async () => {
             await expect(rewardsManager.addReward(name, imgHash, price, inStock))
@@ -111,8 +115,190 @@ describe("Rewards manager contract", async () => {
         
     });
 
-    describe("Placing orders", () => {
-        // TO BE CONTINUED
+    describe("Order placing", () => {
+        
+        it("Should throw error when placing order while being unemployed", async () => {
+            await rewardsManager.addReward(name, imgHash, price, inStock);
+            await paymentsManager.fireEmployee(employeeAddress.address);
+            const rewards = await rewardsManager.getAllRewards();
+            await expect(rewardsManager.connect(employeeAddress).placeOrder(rewards[0].id, 1))
+                .to.be.revertedWith("Only current employee can exchange tokens.");
+        });
+
+        it("Should throw error when trying to order reward with wrong id", async () => {
+            await expect(rewardsManager.placeOrder(100, 1))
+                .to.be.revertedWith("Reward with given ID does not exists");
+        });
+
+        it("Should throw error when employee hasn't approved tokens", async () => {
+            await rewardsManager.addReward(name, imgHash, price, inStock);
+            const rewards = await rewardsManager.getAllRewards();
+            await expect(rewardsManager.connect(employeeAddress).placeOrder(rewards[0].id, 1))
+                .to.be.revertedWith("You must approve this contract address to spend your tokens.");
+        });
+
+        it("Should throw error when employee has insufficient tokens for order", async () => {
+            const wantedQuantity = 1;
+            const tokenRequestAmount = 10;
+            const tokenApprovedAmount = 2000;
+
+            await rewardsManager.addReward(name, imgHash, price, inStock);
+            const rewards = await rewardsManager.getAllRewards();
+
+            const requestId = await paymentsManager.paymentRequestCount();
+            await paymentsManager.connect(employeeAddress).createPaymentRequest(employee2Address.address, tokenRequestAmount, "For completing task");
+            await paymentsManager.acceptPaymentRequest(requestId, "Well done");
+
+            await token.connect(employeeAddress).approve(rewardsManager.address, tokenApprovedAmount);
+
+            await expect(rewardsManager.connect(employeeAddress).placeOrder(rewards[0].id, wantedQuantity))
+                .to.be.revertedWith("ERC20: transfer amount exceeds balance");
+        });
+
+        it("Should throw error when insufficient reward in stock", async () => {
+            const wantedQuantity = 6;
+            const tokenRequestAmount = 2000;
+
+            await rewardsManager.addReward(name, imgHash, price, inStock);
+            const rewards = await rewardsManager.getAllRewards();
+
+            const requestId = await paymentsManager.paymentRequestCount();
+            await paymentsManager.connect(employeeAddress).createPaymentRequest(employee2Address.address, tokenRequestAmount, "For completing task");
+            await paymentsManager.acceptPaymentRequest(requestId, "Well done");
+            
+            await token.connect(employee2Address).approve(rewardsManager.address, tokenRequestAmount);
+            await expect(rewardsManager.connect(employee2Address).placeOrder(rewards[0].id, wantedQuantity))
+                .to.be.revertedWith("Not enough quantity in stock");
+        });
+
+        it("Should emit OrderPlaced and decrease reward in stock amount", async () => {
+            const wantedQuantity = 1;
+            const tokenRequestAmount = 2000;
+
+            await rewardsManager.addReward(name, imgHash, price, inStock);
+            let rewards = await rewardsManager.getAllRewards();
+
+            const requestId = await paymentsManager.paymentRequestCount();
+            await paymentsManager.connect(employeeAddress).createPaymentRequest(employee2Address.address, tokenRequestAmount, "For completing task");
+            await paymentsManager.acceptPaymentRequest(requestId, "Well done");
+
+            await token.connect(employee2Address).approve(rewardsManager.address, tokenRequestAmount);
+
+            await expect(rewardsManager.connect(employee2Address).placeOrder(rewards[0].id, wantedQuantity))
+                .to.emit(rewardsManager, "OrderPlaced").withArgs(employee2Address.address, rewards[0].id, wantedQuantity);
+            
+            rewards = await rewardsManager.getAllRewards();
+            const newRewardQuantity = rewards[0].inStock;
+            expect(newRewardQuantity).to.equal(inStock - wantedQuantity);
+        });
+
+    });
+
+    describe("Order collecting", () => {
+
+        it("Should mark order as collected", async () => {
+            const wantedQuantity = 1;
+            const tokenRequestAmount = 2000;
+
+            await rewardsManager.addReward(name, imgHash, price, inStock);
+            const rewards = await rewardsManager.getAllRewards();
+
+            const requestId = await paymentsManager.paymentRequestCount();
+            await paymentsManager.connect(employeeAddress).createPaymentRequest(employee2Address.address, tokenRequestAmount, "For completing task");
+            await paymentsManager.acceptPaymentRequest(requestId, "Well done");
+
+            await token.connect(employee2Address).approve(rewardsManager.address, tokenRequestAmount);
+
+            await rewardsManager.connect(employee2Address).placeOrder(rewards[0].id, wantedQuantity);
+
+            await expect(rewardsManager.markCollected(employee2Address.address, rewards[0].id, wantedQuantity))
+                .to.emit(rewardsManager, "OrderCollected").withArgs(employee2Address.address, rewards[0].id, wantedQuantity);
+
+        });
+
+        it("Should throw error when marking order as collected as employee", async () => {
+            const wantedQuantity = 1;
+            const tokenRequestAmount = 2000;
+
+            await rewardsManager.addReward(name, imgHash, price, inStock);
+            const rewards = await rewardsManager.getAllRewards();
+
+            const requestId = await paymentsManager.paymentRequestCount();
+            await paymentsManager.connect(employeeAddress).createPaymentRequest(employee2Address.address, tokenRequestAmount, "For completing task");
+            await paymentsManager.acceptPaymentRequest(requestId, "Well done");
+
+            await token.connect(employee2Address).approve(rewardsManager.address, tokenRequestAmount);
+
+            await expect(rewardsManager.connect(employeeAddress).markCollected(employee2Address.address, rewards[0].id, wantedQuantity))
+                .to.be.revertedWith("Only employer can mark orders as collected.");
+        });
+
+        it("Should throw error when trying to collect order that hasn't been placed", async () => {
+            const wantedQuantity = 1;
+            const invalidId = 10;
+            const tokenRequestAmount = 2000;
+
+            await rewardsManager.addReward(name, imgHash, price, inStock);
+            const rewards = await rewardsManager.getAllRewards();
+
+            const requestId = await paymentsManager.paymentRequestCount();
+            await paymentsManager.connect(employeeAddress).createPaymentRequest(employee2Address.address, tokenRequestAmount, "For completing task");
+            await paymentsManager.acceptPaymentRequest(requestId, "Well done");
+
+            await token.connect(employee2Address).approve(rewardsManager.address, tokenRequestAmount);
+
+            await rewardsManager.connect(employee2Address).placeOrder(rewards[0].id, wantedQuantity)
+
+            await expect(rewardsManager.markCollected(employee2Address.address, invalidId, wantedQuantity))
+                .to.be.revertedWith("This order has not been placed or has already been collected.");
+        });
+
+        it("Should throw error when trying to collect order that has been collected before", async () => {
+            const wantedQuantity = 1;
+            const tokenRequestAmount = 2000;
+
+            await rewardsManager.addReward(name, imgHash, price, inStock);
+            const rewards = await rewardsManager.getAllRewards();
+            const rewardId = rewards[0].id;
+
+            const requestId = await paymentsManager.paymentRequestCount();
+            await paymentsManager.connect(employeeAddress).createPaymentRequest(employee2Address.address, tokenRequestAmount, "For completing task");
+            await paymentsManager.acceptPaymentRequest(requestId, "Well done");
+
+            await token.connect(employee2Address).approve(rewardsManager.address, tokenRequestAmount);
+
+            await rewardsManager.connect(employee2Address).placeOrder(rewardId, wantedQuantity)
+
+            await rewardsManager.markCollected(employee2Address.address, rewardId, wantedQuantity);
+
+            await expect(rewardsManager.markCollected(employee2Address.address, rewardId, wantedQuantity))
+                .to.be.revertedWith("This order has not been placed or has already been collected.");
+        });
+
+        it("Should return correct amount of pending orders", async () => {
+            const tokenRequestAmount = 2000;
+            const ordersAmount = 8;
+            const inStock = 10;
+            await rewardsManager.addReward(name, imgHash, price, inStock);
+            const rewards = await rewardsManager.getAllRewards();
+
+            const requestId = await paymentsManager.paymentRequestCount();
+            await paymentsManager.connect(employeeAddress).createPaymentRequest(employee2Address.address, tokenRequestAmount, "For completing task");
+            await paymentsManager.acceptPaymentRequest(requestId, "Well done");
+            await token.connect(employee2Address).approve(rewardsManager.address, tokenRequestAmount);
+
+            for(let i = 0;i<ordersAmount;i++) {
+                if(i >= 8) {
+                    await rewardsManager.markCollected(employee2Address.address, rewards[0].id, 1);
+                }
+                await rewardsManager.connect(employee2Address).placeOrder(rewards[0].id, 1)
+            }
+
+            const pendingOrders = await rewardsManager.getAllPendingOrders(employee2Address.address);
+            const pendingOrdersCount = await rewardsManager.getPendingOrdersCount(employee2Address.address, rewards[0].id);
+
+            expect(pendingOrders[1][0]).to.equal(pendingOrdersCount);
+        });
     });
     
 });
