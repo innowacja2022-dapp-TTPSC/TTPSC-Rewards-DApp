@@ -1,4 +1,5 @@
 import contractAddress from "@contracts/contract-address.json";
+import Payment from "@contracts/PaymentsManager.json";
 import TokenArtifact from "@contracts/Token.json";
 import { Token, Wallet } from "@services/WalletService";
 import { ethers } from "ethers";
@@ -25,6 +26,12 @@ export const _initializeToken = async (): Promise<Wallet | undefined> => {
   const _token = new ethers.Contract(
     contractAddress.Token,
     TokenArtifact.abi,
+    provider.getSigner()
+  );
+
+  const _payments = new ethers.Contract(
+    contractAddress.PaymentsManager,
+    Payment.abi,
     provider.getSigner()
   );
 
@@ -55,6 +62,7 @@ export const _initializeToken = async (): Promise<Wallet | undefined> => {
     balance,
     selectedAddress,
     isAdmin: true,
+    _payment: _payments,
   };
 };
 

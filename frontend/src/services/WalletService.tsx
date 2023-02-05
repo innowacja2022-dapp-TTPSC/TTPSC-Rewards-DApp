@@ -18,6 +18,7 @@ export type Token = {
 };
 
 export type Wallet = {
+  _payment: ethers.Contract;
   _pollDataInterval: NodeJS.Timer;
   _token: ethers.Contract;
   balance: string;

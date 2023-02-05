@@ -6,6 +6,7 @@ import { ContentWrapper } from "./ContentWraper/ContentWraper";
 const Root = lazy(() => import("./Root/Root"));
 const About = lazy(() => import("./About/About"));
 const Send = lazy(() => import("./Send/Send"));
+const Vote = lazy(() => import("./Vote/Vote"));
 const Admin = lazy(() => import("./Admin/Admin"));
 
 export const Router = (): ReactElement => {
@@ -36,6 +37,14 @@ export const Router = (): ReactElement => {
               </Suspense>
             }
             path={paths.about}
+          />
+          <Route
+            element={
+              <Suspense fallback={null}>
+                <Vote />
+              </Suspense>
+            }
+            path={paths.vote}
           />
           <Route
             element={

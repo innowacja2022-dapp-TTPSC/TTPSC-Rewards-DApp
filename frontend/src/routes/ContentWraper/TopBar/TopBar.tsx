@@ -34,6 +34,7 @@ export const TopBar = (): ReactElement => {
         <TopBarLink path={paths.root}>Awards</TopBarLink>
         <TopBarLink path={paths.send}>Send</TopBarLink>
         <TopBarLink path={paths.about}>About</TopBarLink>
+        <TopBarLink path={paths.vote}>Vote</TopBarLink>
         {isAdmin && <AdminLink path={paths.admin}>Menage</AdminLink>}
       </Flex>
       {status === "anon" ? (
