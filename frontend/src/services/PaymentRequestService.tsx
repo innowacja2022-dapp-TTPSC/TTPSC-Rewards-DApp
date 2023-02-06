@@ -1,4 +1,5 @@
 import { QueryFunction } from "@tanstack/react-query";
+import { getRequestList } from "@utils/mock";
 import {
   createContext,
   ReactElement,
@@ -8,7 +9,7 @@ import {
 } from "react";
 import { WalletService } from "./WalletService";
 
-enum PaymentRequestStatus {
+export enum PaymentRequestStatus {
   PENDING,
   ACCEPTED,
   REJECTED,
@@ -77,11 +78,7 @@ export const PaymentRequestServiceProvider = ({
       value: {
         _getPaymentRequestHistory: async ({ queryKey }) => {
           const [, query] = queryKey;
-          const result =
-            await context.wallet._payment.getPaymentRequestHistory();
-          console.log(result);
-          // const result = await _rewards.getAllPendingOrders();
-
+          const result = await getRequestList();
           return result;
         },
         listKey: (query) => {
