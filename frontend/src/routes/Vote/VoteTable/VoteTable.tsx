@@ -20,12 +20,15 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { Fragment, ReactElement } from "react";
+import { VoteButton } from "./VoteButton/VoteButton";
 
 type Props = {
   data: Requests[];
 };
 
 export const VoteTable = ({ data }: Props): ReactElement => {
+  const paymentManagerSerivce = usePaymentRequestService();
+
   const columns: ColumnDef<Requests>[] = [
     { accessorKey: "amount", header: "Reward" },
     { accessorKey: "requestReason", header: "Description" },
@@ -33,7 +36,7 @@ export const VoteTable = ({ data }: Props): ReactElement => {
       accessorKey: "vote",
       header: "Vote",
       cell: ({ row }) => {
-        return <Button>Vote</Button>;
+        return <VoteButton paymentRequestService={paymentManagerSerivce}/>;
       },
     },
   ];
@@ -43,15 +46,19 @@ export const VoteTable = ({ data }: Props): ReactElement => {
     getCoreRowModel: getCoreRowModel(),
   });
   return (
+    <Flex  alignItems="center"
+    h="calc(100% - 80px)"
+    justifyContent="center"
+    px="10"
+    py="10"
+    >
     <Flex
+      h="full"
       alignItems="center"
       borderColor="purple.500"
       borderRadius="xl"
       borderWidth="medium"
-      h="calc(100% - 80px)"
       justifyContent="center"
-      mx="10"
-      my="10"
       p="4"
     >
       <ScrollArea thumbColor="purple.500">
@@ -89,6 +96,7 @@ export const VoteTable = ({ data }: Props): ReactElement => {
           </Tbody>
         </Table>
       </ScrollArea>
+    </Flex>
     </Flex>
   );
 };
