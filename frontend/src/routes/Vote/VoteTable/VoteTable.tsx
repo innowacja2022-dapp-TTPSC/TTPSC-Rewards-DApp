@@ -1,13 +1,4 @@
-import {
-  Button,
-  Flex,
-  Table,
-  Tbody,
-  Td,
-  Th,
-  Thead,
-  Tr,
-} from "@chakra-ui/react";
+import { Flex, Table, Tbody, Td, Th, Thead, Tr } from "@chakra-ui/react";
 import { ScrollArea } from "@components/ScrollArea/ScrollArea";
 import {
   Requests,
@@ -36,7 +27,7 @@ export const VoteTable = ({ data }: Props): ReactElement => {
       accessorKey: "vote",
       header: "Vote",
       cell: ({ row }) => {
-        return <VoteButton paymentRequestService={paymentManagerSerivce}/>;
+        return <VoteButton paymentRequestService={paymentManagerSerivce} />;
       },
     },
   ];
@@ -46,57 +37,58 @@ export const VoteTable = ({ data }: Props): ReactElement => {
     getCoreRowModel: getCoreRowModel(),
   });
   return (
-    <Flex  alignItems="center"
-    h="calc(100% - 80px)"
-    justifyContent="center"
-    px="10"
-    py="10"
-    >
     <Flex
-      h="full"
       alignItems="center"
-      borderColor="purple.500"
-      borderRadius="xl"
-      borderWidth="medium"
+      h="calc(100% - 80px)"
       justifyContent="center"
-      p="4"
+      px="10"
+      py="10"
     >
-      <ScrollArea thumbColor="purple.500">
-        <Table variant="simple">
-          <Thead>
-            {getHeaderGroups().map((headerGroup) => (
-              <Tr key={headerGroup.id} w="full">
-                {headerGroup.headers.map((header) => (
-                  <Th fontSize="md" key={header.id}>
-                    {flexRender(
-                      header.column.columnDef.header,
-                      header.getContext()
-                    )}
-                  </Th>
-                ))}
-              </Tr>
-            ))}
-          </Thead>
-
-          <Tbody>
-            {getRowModel().rows.map((row) => (
-              <Fragment key={row.id}>
-                <Tr>
-                  {row.getVisibleCells().map((cell) => (
-                    <Td key={cell.id}>
+      <Flex
+        alignItems="center"
+        borderColor="purple.500"
+        borderRadius="xl"
+        borderWidth="medium"
+        h="full"
+        justifyContent="center"
+        p="4"
+      >
+        <ScrollArea thumbColor="purple.500">
+          <Table variant="simple">
+            <Thead>
+              {getHeaderGroups().map((headerGroup) => (
+                <Tr key={headerGroup.id} w="full">
+                  {headerGroup.headers.map((header) => (
+                    <Th fontSize="md" key={header.id}>
                       {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
+                        header.column.columnDef.header,
+                        header.getContext()
                       )}
-                    </Td>
+                    </Th>
                   ))}
                 </Tr>
-              </Fragment>
-            ))}
-          </Tbody>
-        </Table>
-      </ScrollArea>
-    </Flex>
+              ))}
+            </Thead>
+
+            <Tbody>
+              {getRowModel().rows.map((row) => (
+                <Fragment key={row.id}>
+                  <Tr>
+                    {row.getVisibleCells().map((cell) => (
+                      <Td key={cell.id}>
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </Td>
+                    ))}
+                  </Tr>
+                </Fragment>
+              ))}
+            </Tbody>
+          </Table>
+        </ScrollArea>
+      </Flex>
     </Flex>
   );
 };

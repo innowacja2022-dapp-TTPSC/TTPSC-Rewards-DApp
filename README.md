@@ -18,11 +18,11 @@ smart contracts and cryptocurrency.
 To run locally:
 ```shell
 npx hardhat node
-npx hardhat run scripts/deploy.js --netowrk localhost
+npx hardhat run scripts/deploy.js --network localhost
 ```
 To run on remote network like mumbai fill your .env file with private key and network data
 ```shell
-npx hardhat run scripts/deploy.js --netowrk mumbai
+npx hardhat run scripts/deploy.js --network mumbai
 ```
 ### Connect to Mumbai network
 
