@@ -113,7 +113,7 @@ contract RewardsManager {
         );
         require(
             rewards[_rewardId].inStock > _quantity,
-            "No enough quantity in stock"
+            "Not enough quantity in stock"
         );
 
         token.transferFrom(
@@ -135,7 +135,7 @@ contract RewardsManager {
     ) public {
         require(
             paymentsManager.isEmployer(msg.sender),
-            "Only employeer can mark orders as collected."
+            "Only employer can mark orders as collected."
         );
         require(
             orders[user][_rewardId] > collected[user][_rewardId],
