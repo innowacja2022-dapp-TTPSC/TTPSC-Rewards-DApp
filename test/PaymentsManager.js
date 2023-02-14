@@ -62,6 +62,13 @@ describe("Payments manager contract", () => {
             expect(isEmployer).to.equal(false);
         });
 
+        it("Should throw hired exception at 2nd time", async () => {
+            const randomWalletAddress = ethers.Wallet.createRandom().address;
+            await paymentsManager.hireEmployee(randomWalletAddress);
+            await expect(paymentsManager.hireEmployee(randomWalletAddress))
+                .to.be.revertedWith("User with this address is already hired");
+        });
+
         it("Should fire employee", async () => {
             const randomWalletAddress = ethers.Wallet.createRandom().address;
             await paymentsManager.hireEmployee(randomWalletAddress);

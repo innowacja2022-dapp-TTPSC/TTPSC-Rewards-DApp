@@ -72,6 +72,10 @@ contract RewardsManager {
             paymentsManager.isEmployer(msg.sender),
             "Only employer can add new reward."
         );
+        require(
+            _price > 0,
+            "rewards price must be higher than 0"
+        );
 
         bytes32 hash = keccak256(abi.encodePacked(_name));
         require(
