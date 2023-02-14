@@ -46,26 +46,29 @@ export const AwardCard = ({
   const { mutate } = useMutation(rewardManagerService.placeOrder);
   const toast = useToast();
   const handleSubmit = () => {
-    mutate(id, {
-      onError: () => {
-        toast({
-          title: "Error",
-          description: "Failed to collect the reward",
-          status: "error",
-          duration: 5000,
-          isClosable: true,
-        });
-      },
-      onSuccess: () => {
-        toast({
-          title: "Whooo",
-          description: "The reward has been collected",
-          status: "success",
-          duration: 5000,
-          isClosable: true,
-        });
-      },
-    });
+    mutate(
+      { id, value },
+      {
+        onError: () => {
+          toast({
+            title: "Error",
+            description: "Failed to collect the reward",
+            status: "error",
+            duration: 5000,
+            isClosable: true,
+          });
+        },
+        onSuccess: () => {
+          toast({
+            title: "Whooo",
+            description: "The reward has been collected",
+            status: "success",
+            duration: 5000,
+            isClosable: true,
+          });
+        },
+      }
+    );
   };
   return (
     <Card bgColor="white" maxW="xs">

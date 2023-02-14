@@ -46,6 +46,11 @@ export type Collect = {
   quantity: number;
 };
 
+export type Order = {
+  id: number;
+  value: string;
+};
+
 type TransactionKey = ["transaction", string] | ["transaction"];
 type AwardKey = ["award", string] | ["award"];
 
@@ -56,7 +61,7 @@ export type RewardManagerServiceValue = {
   _getTransactionData: QueryFunction<Transactions[], TransactionKey>;
   _markCollected: (collect: Collect) => Promise<void>;
   listKey: (query?: string) => TransactionKey;
-  placeOrder: (id: number) => Promise<void>;
+  placeOrder: (order: Order) => Promise<void>;
   rewardKey: (query?: string) => AwardKey;
 };
 
@@ -198,7 +203,14 @@ export const RewardManagerServiceProvider = ({
           }
           return Promise.resolve();
         },
-        placeOrder: async (id: number) => {
+        placeOrder: async ({ id, value }) => {
+          const approve = await context.wallet._token.approve(
+            _rewards.address,
+            ethers.utils.parseUnits(value, "ether")
+          );
+          if (!approve) {
+            return Promise.reject();
+          }
           const result = await _rewards.placeOrder(id, 1);
           if (!result) {
             return Promise.reject();

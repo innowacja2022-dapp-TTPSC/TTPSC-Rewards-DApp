@@ -107,6 +107,7 @@ export const PaymnetManagerServiceProvider = ({
         _getAllRequests: async ({ queryKey }) => {
           const [, query] = queryKey;
           const result = await _payment.getPaymentRequestHistory();
+
           return result.filter((val) => {
             return val.status === 0;
           });

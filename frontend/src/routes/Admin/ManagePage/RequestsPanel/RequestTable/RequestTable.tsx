@@ -7,6 +7,7 @@ import {
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
+import { ethers } from "ethers";
 import { Fragment, ReactElement } from "react";
 import { EditRequest } from "./EditRequest/EditRequest";
 
@@ -16,7 +17,17 @@ type Props = {
 
 export const RequestTable = ({ data }: Props): ReactElement => {
   const columns: ColumnDef<Requests>[] = [
-    { accessorKey: "amount", header: "Amount" },
+    {
+      accessorKey: "amount",
+      header: "Amount",
+      cell: ({ row }) => {
+        return (
+          <Text>
+            {parseFloat(ethers.utils.formatEther(row.original.amount))}
+          </Text>
+        );
+      },
+    },
     { accessorKey: "requestReason", header: "Request Reason" },
     {
       accessorKey: "status",
