@@ -1,8 +1,11 @@
+const { expect } = require("chai");
+const { ethers } = require("hardhat");
 
-const {expect} = require("chai");
-const {ethers} = require("hardhat");
-
-const tokenArgs = {TOKEN_NAME: "TTPSC token", TOKEN_SYMBOL: "TTPSC", INITIAL_SUPPLY: ethers.utils.parseUnits("100", "ether")};
+const tokenArgs = {
+    TOKEN_NAME: "TTPSC token",
+    TOKEN_SYMBOL: "TTPSC",
+    INITIAL_SUPPLY: ethers.utils.parseUnits("100", "ether")
+};
 
 describe("Rewards manager contract", async () => {
 
@@ -79,7 +82,7 @@ describe("Rewards manager contract", async () => {
 
         it("Should return correct reward count", async () => {
             const rewardsCount = 30;
-            for(let i = 0;i<rewardsCount;i++) {
+            for (let i = 0; i < rewardsCount; i++) {
                 await rewardsManager.addReward(name + i, imgHash, price, inStock);
             }
             const rewards = await rewardsManager.getAllRewards();
@@ -106,17 +109,45 @@ describe("Rewards manager contract", async () => {
                 .to.emit(rewardsManager, "InStockChanged").withArgs(rewards[0].id, 10);
         });
 
+        it("Should change price of a reward", async function() {
+            await rewardsManager.addReward(name, imgHash, price, inStock);
+
+            const newPrice = 15;
+            const rewardId = 0;
+
+
+            await rewardsManager.changePrice(rewardId, newPrice);
+
+            const reward = await rewardsManager.rewards(rewardId);
+            expect(reward.price).to.equal(newPrice);
+
+        });
+
+        it("Does not allow non-employer to change price of a reward", async function() {
+            await rewardsManager.addReward("Reward 1", "imgHash1", 100, 10);
+
+            await expect(
+                rewardsManager.connect(employeeAddress).changePrice(0, 200)
+            ).to.be.revertedWith("Only employer can change stock count.");
+
+            const rewards = await rewardsManager.getAllRewards();
+            expect(rewards[0].price).to.equal(100);
+
+
+        });
+
+
         it("Should return correct in stock count for added reward", async () => {
             await rewardsManager.addReward(name, imgHash, price, inStock);
             const rewards = await rewardsManager.getAllRewards();
             const setInStock = await rewardsManager.getInStock(rewards[0].id);
             expect(setInStock).to.equal(inStock);
         });
-        
+
     });
 
     describe("Order placing", () => {
-        
+
         it("Should throw error when placing order while being unemployed", async () => {
             await rewardsManager.addReward(name, imgHash, price, inStock);
             await paymentsManager.fireEmployee(employeeAddress.address);
@@ -165,7 +196,7 @@ describe("Rewards manager contract", async () => {
             const requestId = await paymentsManager.paymentRequestCount();
             await paymentsManager.connect(employeeAddress).createPaymentRequest(employee2Address.address, tokenRequestAmount, "For completing task");
             await paymentsManager.acceptPaymentRequest(requestId, "Well done");
-            
+
             await token.connect(employee2Address).approve(rewardsManager.address, tokenRequestAmount);
             await expect(rewardsManager.connect(employee2Address).placeOrder(rewards[0].id, wantedQuantity))
                 .to.be.revertedWith("Not enough quantity in stock");
@@ -186,7 +217,7 @@ describe("Rewards manager contract", async () => {
 
             await expect(rewardsManager.connect(employee2Address).placeOrder(rewards[0].id, wantedQuantity))
                 .to.emit(rewardsManager, "OrderPlaced").withArgs(employee2Address.address, rewards[0].id, wantedQuantity);
-            
+
             rewards = await rewardsManager.getAllRewards();
             const newRewardQuantity = rewards[0].inStock;
             expect(newRewardQuantity).to.equal(inStock - wantedQuantity);
@@ -247,7 +278,7 @@ describe("Rewards manager contract", async () => {
 
             await token.connect(employee2Address).approve(rewardsManager.address, tokenRequestAmount);
 
-            await rewardsManager.connect(employee2Address).placeOrder(rewards[0].id, wantedQuantity)
+            await rewardsManager.connect(employee2Address).placeOrder(rewards[0].id, wantedQuantity);
 
             await expect(rewardsManager.markCollected(employee2Address.address, invalidId, wantedQuantity))
                 .to.be.revertedWith("This order has not been placed or has already been collected.");
@@ -267,7 +298,7 @@ describe("Rewards manager contract", async () => {
 
             await token.connect(employee2Address).approve(rewardsManager.address, tokenRequestAmount);
 
-            await rewardsManager.connect(employee2Address).placeOrder(rewardId, wantedQuantity)
+            await rewardsManager.connect(employee2Address).placeOrder(rewardId, wantedQuantity);
 
             await rewardsManager.markCollected(employee2Address.address, rewardId, wantedQuantity);
 
@@ -287,8 +318,8 @@ describe("Rewards manager contract", async () => {
             await paymentsManager.acceptPaymentRequest(requestId, "Well done");
             await token.connect(employee2Address).approve(rewardsManager.address, tokenRequestAmount);
 
-            for(let i = 0;i<ordersAmount;i++) {
-                await rewardsManager.connect(employee2Address).placeOrder(rewards[0].id, 1)
+            for (let i = 0; i < ordersAmount; i++) {
+                await rewardsManager.connect(employee2Address).placeOrder(rewards[0].id, 1);
             }
 
             const pendingOrders = await rewardsManager.getAllPendingOrdersByAddress(employee2Address.address);
@@ -308,8 +339,8 @@ describe("Rewards manager contract", async () => {
             await paymentsManager.acceptPaymentRequest(requestId, "Well done");
             await token.connect(employee2Address).approve(rewardsManager.address, tokenRequestAmount);
 
-            for(let i = 0;i<3;i++) {
-                await rewardsManager.connect(employee2Address).placeOrder(rewards[0].id, 1)
+            for (let i = 0; i < 3; i++) {
+                await rewardsManager.connect(employee2Address).placeOrder(rewards[0].id, 1);
             }
 
             const pendingOrders = await rewardsManager.getAllPendingOrders();
@@ -329,5 +360,5 @@ describe("Rewards manager contract", async () => {
             expect(totalSum).to.equal(pendingOrdersCount);
         });
     });
-    
+
 });

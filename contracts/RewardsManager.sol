@@ -45,6 +45,10 @@ contract RewardsManager {
         uint256 indexed rewardId,
         uint256 inStock
     );
+    event PriceChanged(
+        uint256 indexed rewardId,
+        uint256 price
+    );
     event Transfer(
         address indexed from,
         address indexed to,
@@ -96,6 +100,15 @@ contract RewardsManager {
         );
         rewards[_rewardId].inStock = _inStock;
         emit InStockChanged(_rewardId, _inStock);
+    }
+
+    function changePrice(uint256 _rewardId, uint256 _price) public {
+        require(
+            paymentsManager.isEmployer(msg.sender),
+            "Only employer can change stock count."
+        );
+        rewards[_rewardId].price = _price;
+        emit PriceChanged(_rewardId, _price);
     }
 
     function placeOrder(uint256 _rewardId, uint256 _quantity) public {
