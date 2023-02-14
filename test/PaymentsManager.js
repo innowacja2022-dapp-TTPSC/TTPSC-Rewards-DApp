@@ -78,7 +78,7 @@ describe("Payments manager contract", () => {
         it("Should throw appriopriate error if handling employees as an employee", async () => {
             const randomWalletAddress = ethers.Wallet.createRandom().address;
             await expect(paymentsManager.connect(employeeAddress).hireEmployer(randomWalletAddress))
-                .to.be.revertedWith("Only the employer can add employees.");
+                .to.be.revertedWith("Only the employer can add employers.");
             await expect(paymentsManager.connect(employeeAddress).hireEmployee(randomWalletAddress))
                 .to.be.revertedWith("Only the employer can add employees.");
             await expect(paymentsManager.connect(employeeAddress).fireEmployee(randomWalletAddress))
