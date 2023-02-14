@@ -7,7 +7,7 @@ export const _startPollingData = (
 ): NodeJS.Timer => {
   const _pollDataInterval = setInterval(
     () => _updateBalance(_token, selectedAddress),
-    1000
+    10000
   );
 
   // We run it once immediately so we don't have to wait for it
