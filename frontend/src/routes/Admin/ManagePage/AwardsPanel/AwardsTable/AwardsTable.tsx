@@ -1,9 +1,6 @@
-import { Table, Tbody, Td, Th, Thead, Tr } from "@chakra-ui/react";
+import { Image, Table, Tbody, Td, Th, Thead, Tr } from "@chakra-ui/react";
 import { ScrollArea } from "@components/ScrollArea/ScrollArea";
-import {
-  Awards,
-  useRewardManagerService,
-} from "@services/RewardManagerService";
+import { Awards } from "@services/RewardManagerService";
 import {
   ColumnDef,
   flexRender,
@@ -11,25 +8,31 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { Fragment, ReactElement } from "react";
-import { ManageAward } from "./ManageAward/ManageAward";
+import { EditAward } from "./EditAward/EditAward";
 
 type Props = {
   data: Awards[];
 };
 
 export const AwardsTable = ({ data }: Props): ReactElement => {
-  const rewardManagerService = useRewardManagerService();
-
   const columns: ColumnDef<Awards>[] = [
     { accessorKey: "name", header: "Name" },
-    { accessorKey: "amount", header: "Amount" },
+    { accessorKey: "inStock", header: "Amount" },
     { accessorKey: "price", header: "Price" },
-    { accessorKey: "image", header: "Image" },
+    {
+      accessorKey: "imgHash",
+      header: "Image",
+      cell: ({ row }) => {
+        return (
+          <Image borderRadius="md" h="20" src={row.original.imgHash} w="20" />
+        );
+      },
+    },
     {
       accessorKey: "manage",
       header: "Manage",
       cell: ({ row }) => {
-        return <ManageAward award={row.original} />;
+        return <EditAward award={row.original} />;
       },
     },
   ];
