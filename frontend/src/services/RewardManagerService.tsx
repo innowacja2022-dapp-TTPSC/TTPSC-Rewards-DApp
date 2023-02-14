@@ -110,32 +110,6 @@ const getRewardName = async (id: number, _rewards: ethers.Contract) => {
   return Promise.resolve(result.name);
 };
 
-const getTransactions = (
-  results: any,
-  _rewards: ethers.Contract
-): Promise<Transactions[]> => {
-  return new Promise((resolve) =>
-    results.map((result) => {
-      const transaction = result.orders.map(async (order) => {
-        if (order.pendingQuantity > 0) {
-          const id = order.id.toNumber();
-          const quantity = order.pendingQuantity.toNumber();
-          const name = await getRewardName(id, _rewards);
-          console.log(name);
-          return Promise.resolve({
-            address: result.user,
-            id: id,
-            quantity: quantity,
-            reward: name,
-          });
-        }
-      });
-      console.log(transaction);
-      resolve(transaction);
-    })
-  );
-};
-
 export const RewardManagerServiceProvider = ({
   children,
 }: Props): ReactElement => {
@@ -158,7 +132,24 @@ export const RewardManagerServiceProvider = ({
           //const result = await Promise.resolve(getTransactionData());
 
           const results = await _rewards.getAllPendingOrders();
-          const transaction = await getTransactions(results, _rewards);
+          const transaction: Transactions[] = [];
+          results.map((result) => {
+            result.orders.map((order) => {
+              if (order.pendingQuantity > 0) {
+                const id = order.id.toNumber();
+                const quantity = order.pendingQuantity.toNumber();
+                const name = getRewardName(id, _rewards).then((v) => {
+                  return transaction.push({
+                    address: result.user,
+                    id: id,
+                    quantity: quantity,
+                    reward: v,
+                  });
+                });
+              }
+            });
+            return;
+          });
           console.log(transaction);
           return transaction;
         },

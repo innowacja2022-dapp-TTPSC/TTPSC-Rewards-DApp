@@ -7,11 +7,17 @@ import {
   Flex,
   Heading,
   Image,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalOverlay,
   Spacer,
   Stack,
   Text,
+  useDisclosure,
   useToast,
 } from "@chakra-ui/react";
+import { Loading } from "@routes/ContentWraper/TopBar/ConnectWallet/Loading/Loading";
 import { RewardManagerServiceValue } from "@services/RewardManagerService";
 import { WalletService } from "@services/WalletService";
 import { useMutation } from "@tanstack/react-query";
@@ -44,7 +50,7 @@ export const AwardCard = ({
       setIsDisabled(true);
     }
   }, [context.status]);
-  const { mutate } = useMutation(rewardManagerService.placeOrder);
+  const { mutate, isLoading } = useMutation(rewardManagerService.placeOrder);
   const toast = useToast();
   const handleSubmit = () => {
     mutate(
@@ -71,34 +77,52 @@ export const AwardCard = ({
       }
     );
   };
+  const { onClose } = useDisclosure();
+
   return (
-    <Card bgColor="white" w="xs">
-      <CardBody m="auto">
-        <Image
-          alt={`values ${value} ${currency}.`}
-          borderRadius="lg"
-          boxSize="2xs"
-          objectFit="cover"
-          src={image}
-        />
-        <Stack mt="6" spacing="3" textAlign="center">
-          <Heading size="md">{title}</Heading>
-        </Stack>
-      </CardBody>
-      <Divider />
-      <Flex>
-        <Box p="4">
-          <Text color="pink.600" fontSize="2xl" fontWeight="semibold">
-            {parseFloat(ethers.utils.formatEther(value))} {currency}
-          </Text>
-        </Box>
-        <Spacer />
-        <Box p="4">
-          <Button isDisabled={isDisabled} onClick={handleSubmit}>
-            Redeem
-          </Button>
-        </Box>
-      </Flex>
-    </Card>
+    <>
+      <Modal
+        closeOnEsc={!isLoading}
+        closeOnOverlayClick={!isLoading}
+        isCentered
+        isOpen={isLoading}
+        onClose={onClose}
+      >
+        <ModalOverlay />
+        <ModalContent maxW="lg">
+          <ModalBody>
+            <Loading />
+          </ModalBody>
+        </ModalContent>
+      </Modal>
+      <Card bgColor="white" w="xs">
+        <CardBody m="auto">
+          <Image
+            alt={`values ${value} ${currency}.`}
+            borderRadius="lg"
+            boxSize="2xs"
+            objectFit="cover"
+            src={image}
+          />
+          <Stack mt="6" spacing="3" textAlign="center">
+            <Heading size="md">{title}</Heading>
+          </Stack>
+        </CardBody>
+        <Divider />
+        <Flex>
+          <Box p="4">
+            <Text color="pink.600" fontSize="2xl" fontWeight="semibold">
+              {parseFloat(ethers.utils.formatEther(value))} {currency}
+            </Text>
+          </Box>
+          <Spacer />
+          <Box p="4">
+            <Button isDisabled={isDisabled} onClick={handleSubmit}>
+              Redeem
+            </Button>
+          </Box>
+        </Flex>
+      </Card>
+    </>
   );
 };

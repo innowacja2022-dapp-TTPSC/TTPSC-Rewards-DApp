@@ -9,14 +9,14 @@ const TransactionsPanel = (): ReactElement => {
   const rewardManagerService = useRewardManagerService();
   const quer = useQuery(
     rewardManagerService.listKey(),
-    rewardManagerService._getTransactionData
+    rewardManagerService._getTransactionData,
+    { cacheTime: 10 * 60 * 1000 }
   );
 
   if (quer.status === "loading") {
     return <TableLoading columns={4} tableHead={tableHead.transactionsHead} />;
   }
   if (quer.status === "success") {
-    console.log(quer);
     return <TransactionTable data={quer.data} />;
   }
   return <TableError />;

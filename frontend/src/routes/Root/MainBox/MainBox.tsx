@@ -23,14 +23,19 @@ export const MainBox = (): ReactElement => {
 
       <Flex justifyContent="center" px="10" py="4">
         {quer.status === "loading" ? (
-          <>
+          <Flex
+            alignItems="center"
+            flexWrap="wrap"
+            gap="8"
+            justifyContent="center"
+          >
             <MainLoading />
             <MainLoading />
             <MainLoading />
             <MainLoading />
             <MainLoading />
             <MainLoading />
-          </>
+          </Flex>
         ) : quer.status === "success" ? (
           <CardWrapper data={quer.data} />
         ) : (
