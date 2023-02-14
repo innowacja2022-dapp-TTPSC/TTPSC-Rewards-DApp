@@ -7,6 +7,7 @@ import {
   Tabs,
 } from "@chakra-ui/react";
 import { ReactElement } from "react";
+import { AddAward } from "./AwardsPanel/AddAward/AddAward";
 import AwardsPanel from "./AwardsPanel/AwardsPanel";
 import RequestsPanel from "./RequestsPanel/RequestsPanel";
 import TransactionsPanel from "./TransactionsPanel/TransactionsPanel";
@@ -84,13 +85,14 @@ export const ManagePage = (): ReactElement => {
             <TabPanel h="full" maxH="full">
               <TransactionsPanel />
             </TabPanel>
-            <TabPanel>
+            <TabPanel h="full" maxH="full">
               <RequestsPanel />
             </TabPanel>
-            <TabPanel>
+            <TabPanel h="full" maxH="full">
               <AwardsPanel />
+              <AddAward />
             </TabPanel>
-            <TabPanel>
+            <TabPanel h="full" maxH="full">
               <UsersPanel />
             </TabPanel>
           </TabPanels>
