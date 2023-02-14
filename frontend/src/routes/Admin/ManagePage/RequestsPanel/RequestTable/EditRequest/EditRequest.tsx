@@ -34,7 +34,7 @@ export const EditRequest = ({ request }: Props): ReactElement => {
   const [decisionReason, setDecisionReason] = useState(request.decisionReason);
 
   const handleStatusChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    if (e.target.value === "ACCEPTED") {
+    if (e.target.value === "1") {
       setStatus(1);
     } else {
       setStatus(2);

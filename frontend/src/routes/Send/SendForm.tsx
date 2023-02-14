@@ -39,7 +39,7 @@ const SendForm = (): ReactElement => {
         onError: () => {
           toast({
             title: "Error",
-            description: "Failed to edit the request",
+            description: "Failed to send the request",
             status: "error",
             duration: 5000,
             isClosable: true,
@@ -48,7 +48,7 @@ const SendForm = (): ReactElement => {
         onSuccess: () => {
           toast({
             title: "Whooo",
-            description: "The request has been edited",
+            description: "The request was sent",
             status: "success",
             duration: 5000,
             isClosable: true,

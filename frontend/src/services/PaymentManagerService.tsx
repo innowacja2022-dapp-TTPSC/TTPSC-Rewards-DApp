@@ -1,7 +1,7 @@
 import contractAddress from "@contracts/contract-address.json";
 import PaymentsManager from "@contracts/PaymentsManager.json";
 import { QueryFunction } from "@tanstack/react-query";
-import { BigNumber, ethers } from "ethers";
+import { ethers } from "ethers";
 import {
   createContext,
   ReactElement,
@@ -92,7 +92,7 @@ export const PaymnetManagerServiceProvider = ({
         _createPaymentRequest: (paymentRequest) => {
           const result = _payment.createPaymentRequest(
             paymentRequest.address,
-            BigNumber.from(paymentRequest.amount),
+            ethers.utils.parseUnits(paymentRequest.amount.toString(), "ether"),
             paymentRequest.paymentRequestReason
           );
           if (!result) {
