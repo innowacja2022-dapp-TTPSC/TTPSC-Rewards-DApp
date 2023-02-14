@@ -174,7 +174,7 @@ export const RewardManagerServiceProvider = ({
           const result = await _rewards.addReward(
             award.name,
             url,
-            award.price,
+            ethers.utils.parseUnits(award.price.toString(), "ether"),
             award.inStock
           );
           if (!result) {
@@ -211,6 +211,14 @@ export const RewardManagerServiceProvider = ({
           if (!approve) {
             return Promise.reject();
           }
+          const currentAllowance = await context.wallet._token.allowance(
+            context.wallet.selectedAddress,
+            _rewards.address
+          );
+          if (!currentAllowance) {
+            return Promise.reject();
+          }
+          console.log(currentAllowance);
           const result = await _rewards.placeOrder(id, 1);
           if (!result) {
             return Promise.reject();
