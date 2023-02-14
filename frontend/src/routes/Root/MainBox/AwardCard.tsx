@@ -72,12 +72,12 @@ export const AwardCard = ({
     );
   };
   return (
-    <Card bgColor="white" maxW="xs">
-      <CardBody>
+    <Card bgColor="white" w="xs">
+      <CardBody m="auto">
         <Image
           alt={`values ${value} ${currency}.`}
           borderRadius="lg"
-          boxSize="3xs"
+          boxSize="2xs"
           objectFit="cover"
           src={image}
         />
