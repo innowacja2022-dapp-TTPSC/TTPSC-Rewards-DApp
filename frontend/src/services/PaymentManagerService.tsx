@@ -27,9 +27,16 @@ export type Requests = {
   status: PaymentRequestStatus;
 };
 
+export type PaymentRequet = {
+  address: string;
+  amount: number;
+  paymentRequestReason: string;
+};
+
 type RequestKey = ["request", string] | ["request"];
 
 export type PaymnetManagerServiceValue = {
+  _createPaymentRequest: (paymentRequest: PaymentRequet) => Promise<void>;
   _getAllRequests: QueryFunction<Requests[], RequestKey>;
   changeRequestStatus: (request: Requests) => Promise<void>;
   requestKey: (query?: string) => RequestKey;
@@ -79,6 +86,17 @@ export const PaymnetManagerServiceProvider = ({
     return {
       isInitialized: true,
       value: {
+        _createPaymentRequest: (paymentRequest) => {
+          const result = _payment.createPaymentRequest(
+            paymentRequest.address,
+            paymentRequest.amount,
+            paymentRequest.paymentRequestReason
+          );
+          if (!result) {
+            return Promise.reject();
+          }
+          return Promise.resolve();
+        },
         requestKey: (query) => {
           return query ? ["request", query] : ["request"];
         },

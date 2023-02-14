@@ -1,7 +1,6 @@
 import contractAddress from "@contracts/contract-address.json";
 import RewardsManagerArtifact from "@contracts/RewardsManager.json";
 import { QueryFunction } from "@tanstack/react-query";
-import { getTransactionData } from "@utils/mock";
 import { Buffer } from "buffer";
 import { ethers } from "ethers";
 import { create } from "ipfs-http-client";
@@ -17,7 +16,7 @@ import { WalletService } from "./WalletService";
 export type Transactions = {
   address: string;
   id: number;
-  quantity: string;
+  quantity: number;
   reward: string;
 };
 
@@ -119,11 +118,23 @@ export const RewardManagerServiceProvider = ({
       value: {
         _getTransactionData: async ({ queryKey }) => {
           const [, query] = queryKey;
-          const result = await Promise.resolve(getTransactionData());
+          //const result = await Promise.resolve(getTransactionData());
 
-          // const result = await _rewards.getAllPendingOrders();
+          const results = await _rewards.getAllPendingOrders();
+          const transaction: Transactions[] = [];
+          results.map((result) => {
+            transaction.push({
+              address: result.user,
+              id: result.rewardsArray[0].toNumber(),
+              quantity: result.pendingArray[0].toNumber(),
+              reward: "X",
+            });
+            return;
+          });
 
-          return result;
+          return transaction.filter((val) => {
+            return val.quantity > 0;
+          });
         },
         listKey: (query) => {
           return query ? ["transaction", query] : ["transaction"];
@@ -145,7 +156,10 @@ export const RewardManagerServiceProvider = ({
         _getAllRewards: async ({ queryKey }) => {
           const [, query] = queryKey;
           const result = await _rewards.getAllRewards();
-          return result;
+          console.log(result);
+          return result.filter((val) => {
+            return val.inStock > 0;
+          });
         },
         _addReward: async (award: AddAwards) => {
           if (!award.image) {

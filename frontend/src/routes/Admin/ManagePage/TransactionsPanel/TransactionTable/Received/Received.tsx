@@ -84,7 +84,7 @@ export const Received = ({
           <ModalBody>
             <Text fontSize="lg" fontWeight="semibold" my="4" px="4">
               {"How many " +
-                transaction.reward +
+                transaction.rewardId +
                 " have you given out to " +
                 transaction.address +
                 "?"}

@@ -1,11 +1,12 @@
-import { Box } from "@chakra-ui/react";
+import { Flex } from "@chakra-ui/react";
 import { ReactElement } from "react";
+import { HireEmployee } from "./HireEmployee/HireEmployee";
 
 const UsersPanel = (): ReactElement => {
   return (
-    <>
-      <Box style={{ maxHeight: "468px", overflow: "auto" }}>Users</Box>
-    </>
+    <Flex>
+      <HireEmployee />
+    </Flex>
   );
 };
 

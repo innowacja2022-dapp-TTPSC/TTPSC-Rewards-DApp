@@ -41,6 +41,8 @@ export const EditRequest = ({ request }: Props): ReactElement => {
     }
   };
 
+  const { isOpen, onOpen, onClose } = useDisclosure();
+
   const { mutate } = useMutation(paymentManagerService.changeRequestStatus);
   const toast = useToast();
   const handleSubmit = () => {
@@ -52,6 +54,7 @@ export const EditRequest = ({ request }: Props): ReactElement => {
       },
       {
         onError: () => {
+          onClose();
           toast({
             title: "Error",
             description: "Failed to edit the request",
@@ -61,6 +64,7 @@ export const EditRequest = ({ request }: Props): ReactElement => {
           });
         },
         onSuccess: () => {
+          onClose();
           toast({
             title: "Whooo",
             description: "The request has been edited",
@@ -72,7 +76,6 @@ export const EditRequest = ({ request }: Props): ReactElement => {
       }
     );
   };
-  const { isOpen, onOpen, onClose } = useDisclosure();
   return (
     <>
       <IconButton
