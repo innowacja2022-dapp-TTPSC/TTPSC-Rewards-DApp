@@ -1,8 +1,16 @@
-import { Center, Container, Flex, Heading, Spacer } from "@chakra-ui/react";
+import { Box, Center, Container, Flex, Heading } from "@chakra-ui/react";
+import { useRewardManagerService } from "@services/RewardManagerService";
+import { useQuery } from "@tanstack/react-query";
 import { ReactElement } from "react";
 import { CardWrapper } from "./CardWrapper";
+import { MainLoading } from "./MainLoading/MainLoading";
 
 export const MainBox = (): ReactElement => {
+  const rewardManagerService = useRewardManagerService();
+  const quer = useQuery(
+    rewardManagerService.rewardKey(),
+    rewardManagerService._getAllRewards
+  );
   return (
     <>
       <Center minH="10ch">
@@ -15,9 +23,13 @@ export const MainBox = (): ReactElement => {
         </Heading>
       </Center>
       <Flex justifyContent="space-between" px="10" py="4">
-        <Spacer />
-        <CardWrapper />
-        <Spacer />
+        {quer.status === "loading" ? (
+          <MainLoading />
+        ) : quer.status === "success" ? (
+          <CardWrapper data={quer.data} />
+        ) : (
+          <Box> Error</Box>
+        )}
       </Flex>
     </>
   );

@@ -1,61 +1,32 @@
 import { Flex } from "@chakra-ui/react";
+import {
+  Awards,
+  useRewardManagerService,
+} from "@services/RewardManagerService";
 import { ReactElement } from "react";
 import { AwardCard } from "./AwardCard";
 
-const cardData = {
-  title: "Allegro 50PLN",
-  value: "5,00",
-  description: "Allegro gift card",
-  image:
-    "https://a.allegroimg.com/s720/03444d/5fbfc8ff4da986b370a7d62997c3/Karta-Podarunkowa-Prezent-50-zl",
+type Props = {
+  data: Awards[];
 };
 
-export const CardWrapper = (): ReactElement => {
+export const CardWrapper = ({ data }: Props): ReactElement => {
+  const rewardManagerService = useRewardManagerService();
+
   return (
-    <>
-      <Flex flexWrap="wrap" gap="8" justify="center" maxW="1300px">
-        <AwardCard
-          description={cardData.description}
-          image={cardData.image}
-          title={cardData.title}
-          value={cardData.value}
-        />
-
-        <AwardCard
-          description={cardData.description}
-          image={cardData.image}
-          title={cardData.title}
-          value={cardData.value}
-        />
-
-        <AwardCard
-          description={cardData.description}
-          image={cardData.image}
-          title={cardData.title}
-          value={cardData.value}
-        />
-
-        <AwardCard
-          description={cardData.description}
-          image={cardData.image}
-          title={cardData.title}
-          value={cardData.value}
-        />
-
-        <AwardCard
-          description={cardData.description}
-          image={cardData.image}
-          title={cardData.title}
-          value={cardData.value}
-        />
-
-        <AwardCard
-          description={cardData.description}
-          image={cardData.image}
-          title={cardData.title}
-          value={cardData.value}
-        />
-      </Flex>
-    </>
+    <Flex flexWrap="wrap" gap="8" justify="center">
+      {data.map((award) => {
+        return (
+          <AwardCard
+            id={award.id}
+            image={award.imgHash}
+            key={award.id}
+            rewardManagerService={rewardManagerService}
+            title={award.name}
+            value={award.price.toString()}
+          />
+        );
+      })}
+    </Flex>
   );
 };

@@ -1,7 +1,6 @@
 import {
   Box,
   Button,
-  ButtonGroup,
   Card,
   CardBody,
   Divider,
@@ -11,13 +10,17 @@ import {
   Spacer,
   Stack,
   Text,
+  useToast,
 } from "@chakra-ui/react";
+import { RewardManagerServiceValue } from "@services/RewardManagerService";
 import { WalletService } from "@services/WalletService";
+import { useMutation } from "@tanstack/react-query";
 import { ReactElement, useContext, useEffect, useState } from "react";
 
 type Props = {
-  description: string;
+  id: number;
   image: string;
+  rewardManagerService: RewardManagerServiceValue;
   title: string;
   value: string;
 };
@@ -26,9 +29,10 @@ const currency = "TTPSC";
 
 export const AwardCard = ({
   title,
-  description,
   value,
   image,
+  rewardManagerService,
+  id,
 }: Props): ReactElement => {
   const context = useContext(WalletService);
   const [isDisabled, setIsDisabled] = useState(true);
@@ -39,33 +43,56 @@ export const AwardCard = ({
       setIsDisabled(true);
     }
   }, [context.status]);
+  const { mutate } = useMutation(rewardManagerService.placeOrder);
+  const toast = useToast();
+  const handleSubmit = () => {
+    mutate(id, {
+      onError: () => {
+        toast({
+          title: "Error",
+          description: "Failed to edit the request",
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+        });
+      },
+      onSuccess: () => {
+        toast({
+          title: "Whooo",
+          description: "The request has been edited",
+          status: "success",
+          duration: 5000,
+          isClosable: true,
+        });
+      },
+    });
+  };
   return (
     <Card bgColor="white" maxW="xs">
       <CardBody>
         <Image
-          alt={`${description}, values ${value} ${currency}.`}
+          alt={`values ${value} ${currency}.`}
           borderRadius="lg"
+          boxSize="2xs"
+          objectFit="cover"
           src={image}
         />
-        <Stack mt="6" spacing="3">
+        <Stack mt="6" spacing="3" textAlign="center">
           <Heading size="md">{title}</Heading>
-          <Text>{description}</Text>
         </Stack>
       </CardBody>
       <Divider />
       <Flex>
         <Box p="4">
-          <Text color="blue.600" fontSize="2xl">
+          <Text color="purple.600" fontSize="2xl">
             {value} {currency}
           </Text>
         </Box>
         <Spacer />
         <Box p="4">
-          <ButtonGroup spacing="2">
-            <Button colorScheme="blue" isDisabled={isDisabled} variant="solid">
-              Redeem
-            </Button>
-          </ButtonGroup>
+          <Button isDisabled={isDisabled} onClick={handleSubmit}>
+            Redeem
+          </Button>
         </Box>
       </Flex>
     </Card>

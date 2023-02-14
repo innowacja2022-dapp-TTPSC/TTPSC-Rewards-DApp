@@ -57,6 +57,7 @@ export type RewardManagerServiceValue = {
   _getTransactionData: QueryFunction<Transactions[], TransactionKey>;
   _markCollected: (collect: Collect) => Promise<void>;
   listKey: (query?: string) => TransactionKey;
+  placeOrder: (id: number) => Promise<void>;
   rewardKey: (query?: string) => AwardKey;
 };
 
@@ -181,6 +182,13 @@ export const RewardManagerServiceProvider = ({
             if (!result) {
               return Promise.reject();
             }
+          }
+          return Promise.resolve();
+        },
+        placeOrder: async (id: number) => {
+          const result = await _rewards.placeOrder(id, 1);
+          if (!result) {
+            return Promise.reject();
           }
           return Promise.resolve();
         },
