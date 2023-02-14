@@ -1,5 +1,6 @@
 import { ChakraProvider, extendTheme } from "@chakra-ui/react";
 import { Router } from "@routes/Router";
+import { PaymnetManagerServiceProvider } from "@services/PaymentManagerService";
 import { RewardManagerServiceProvider } from "@services/RewardManagerService";
 import { WalletServiceProvider } from "@services/WalletService";
 import { rawTheme } from "@styles/theme";
@@ -15,9 +16,11 @@ const App = (): ReactElement => {
     <QueryClientProvider client={client}>
       <ChakraProvider theme={theme}>
         <WalletServiceProvider>
-          <RewardManagerServiceProvider>
-            <Router />
-          </RewardManagerServiceProvider>
+          <PaymnetManagerServiceProvider>
+            <RewardManagerServiceProvider>
+              <Router />
+            </RewardManagerServiceProvider>
+          </PaymnetManagerServiceProvider>
         </WalletServiceProvider>
       </ChakraProvider>
     </QueryClientProvider>
