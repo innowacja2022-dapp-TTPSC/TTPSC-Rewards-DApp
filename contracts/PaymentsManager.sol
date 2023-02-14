@@ -65,6 +65,10 @@ contract PaymentsManager {
             isEmployer[msg.sender],
             "Only the employer can add employees."
         );
+        require(
+            !isCurrentEmployee[employee],
+            "User with this address is already hired"
+        );
 
         addUser(employee, false);
         currentEmployeeCount++;
