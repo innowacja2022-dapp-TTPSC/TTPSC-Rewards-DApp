@@ -2,14 +2,14 @@ import contractAddress from "@contracts/contract-address.json";
 import RewardsManagerArtifact from "@contracts/RewardsManager.json";
 import { QueryFunction } from "@tanstack/react-query";
 import { Buffer } from "buffer";
-import { ethers } from "ethers";
+import { BigNumber, ethers } from "ethers";
 import { create } from "ipfs-http-client";
 import {
   createContext,
   ReactElement,
   ReactNode,
   useContext,
-  useMemo,
+  useMemo
 } from "react";
 import { WalletService } from "./WalletService";
 
@@ -67,16 +67,16 @@ export type RewardManagerServiceValue = {
 
 export type RewardManagerServiceNullableValue =
   | {
-      isInitialized: false;
-    }
+  isInitialized: false;
+}
   | {
-      isInitialized: true;
-      value: RewardManagerServiceValue;
-    };
+  isInitialized: true;
+  value: RewardManagerServiceValue;
+};
 
 export const RewardManagerService =
   createContext<RewardManagerServiceNullableValue>({
-    isInitialized: false,
+    isInitialized: false
   });
 
 export const useRewardManagerService = (): RewardManagerServiceValue => {
@@ -100,9 +100,27 @@ const client = create({
   port: 5001,
   protocol: "https",
   headers: {
-    authorization: auth,
-  },
+    authorization: auth
+  }
 });
+
+const waitForAllowance = async (maxTimeout: number, amount: BigNumber, tokenContract: ethers.Contract, owner: string, spender: string) => {
+  const startTime = Date.now();
+  let delay = 2000;
+  return new Promise(async (resolve, reject) => {
+    while (Date.now() - startTime < maxTimeout) {
+      const allowance = await tokenContract.allowance(owner, spender);
+      if (allowance >= amount) {
+        console.log("Allowance is huge enough")
+        return resolve("good");
+      }
+      await new Promise(resolve => setTimeout(resolve, delay));
+      console.log("No allowance, check again in: ", delay)
+      delay += 3000;
+    }
+    reject(new Error("Timeout reached - unable to place order"));
+  });
+};
 
 const getRewardName = async (id: number, _rewards: ethers.Contract) => {
   const result = await _rewards.rewards(id);
@@ -111,8 +129,8 @@ const getRewardName = async (id: number, _rewards: ethers.Contract) => {
 };
 
 export const RewardManagerServiceProvider = ({
-  children,
-}: Props): ReactElement => {
+                                               children
+                                             }: Props): ReactElement => {
   const context = useContext(WalletService);
 
   const value = useMemo<RewardManagerServiceNullableValue>(() => {
@@ -216,30 +234,26 @@ export const RewardManagerServiceProvider = ({
           return Promise.resolve();
         },
         placeOrder: async ({ id, value }) => {
-          const approve = await context.wallet._token.approve(
-            _rewards.address,
-            ethers.utils.parseUnits(value, "ether")
-          );
-          if (!approve) {
+          const amount: BigNumber = ethers.utils.parseUnits(value, "ether");
+          const spender = _rewards.address;
+          const owner = context.wallet.selectedAddress;
+
+          try {
+
+            await context.wallet._token.approve(spender, amount);
+            await waitForAllowance(30000, amount, context.wallet._token, owner, spender);
+            await _rewards.placeOrder(id, 1);
+
+          } catch (error) {
+
+            console.log("Failed to approve allowance:", error);
             return Promise.reject();
+
           }
-          const currentAllowance = await context.wallet._token.allowance(
-            context.wallet.selectedAddress,
-            _rewards.address
-          );
-          // eslint-disable-next-line promise/param-names
-          await new Promise((res) => setTimeout(res, 2000));
-          if (!currentAllowance) {
-            return Promise.reject();
-          }
-          console.log(currentAllowance);
-          const result = await _rewards.placeOrder(id, 1);
-          if (!result) {
-            return Promise.reject();
-          }
+
           return Promise.resolve();
-        },
-      },
+        }
+      }
     };
   }, [context]);
 
