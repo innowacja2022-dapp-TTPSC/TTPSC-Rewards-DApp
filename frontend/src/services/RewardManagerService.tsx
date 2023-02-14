@@ -22,8 +22,21 @@ export type Transactions = {
 };
 
 export type Awards = {
-  amount: number;
+  id: number;
+  imgHash: string;
+  inStock: number;
+  name: string;
+  price: number;
+};
+
+export type EditAward = {
+  newAward: Awards;
+  oldAward: Awards;
+};
+
+export type AddAwards = {
   image?: Buffer;
+  inStock: number;
   name: string;
   price: number;
 };
@@ -38,7 +51,8 @@ type TransactionKey = ["transaction", string] | ["transaction"];
 type AwardKey = ["award", string] | ["award"];
 
 export type RewardManagerServiceValue = {
-  _addReward: (award: Awards) => Promise<void>;
+  _addReward: (award: AddAwards) => Promise<void>;
+  _editReward: (editAward: EditAward) => Promise<void>;
   _getAllRewards: QueryFunction<Awards[], AwardKey>;
   _getTransactionData: QueryFunction<Transactions[], TransactionKey>;
   _markCollected: (collect: Collect) => Promise<void>;
@@ -132,20 +146,41 @@ export const RewardManagerServiceProvider = ({
           const result = await _rewards.getAllRewards();
           return result;
         },
-        _addReward: async (award: Awards) => {
+        _addReward: async (award: AddAwards) => {
           if (!award.image) {
             return Promise.reject();
           }
           const created = await client.add(award.image);
-          const url = `https://ipfs.infura.io/ipfs/${created.path}`;
+          const url = `https://ttpsc.infura-ipfs.io/ipfs/${created.path}`;
           const result = await _rewards.addReward(
             award.name,
             url,
             award.price,
-            award.amount
+            award.inStock
           );
           if (!result) {
             return Promise.reject();
+          }
+          return Promise.resolve();
+        },
+        _editReward: async ({ oldAward, newAward }: EditAward) => {
+          if (oldAward.inStock !== newAward.inStock) {
+            const result = await _rewards.changeInStock(
+              newAward.id,
+              newAward.inStock
+            );
+            if (!result) {
+              return Promise.reject();
+            }
+          }
+          if (oldAward.price !== newAward.price) {
+            const result = await _rewards.changeInStock(
+              newAward.id,
+              newAward.inStock
+            );
+            if (!result) {
+              return Promise.reject();
+            }
           }
           return Promise.resolve();
         },
