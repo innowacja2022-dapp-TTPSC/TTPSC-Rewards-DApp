@@ -120,6 +120,38 @@ const waitForAllowance = async (maxTimeout: number, amount: BigNumber, tokenCont
   });
 };
 
+const getRewardName = async (id: number, _rewards: ethers.Contract) => {
+  const result = await _rewards.rewards(id);
+
+  return Promise.resolve(result.name);
+};
+
+const getTransactions = (
+  results: any,
+  _rewards: ethers.Contract
+): Promise<Transactions[]> => {
+  return new Promise((resolve) =>
+    results.map((result) => {
+      const transaction = result.orders.map(async (order) => {
+        if (order.pendingQuantity > 0) {
+          const id = order.id.toNumber();
+          const quantity = order.pendingQuantity.toNumber();
+          const name = await getRewardName(id, _rewards);
+          console.log(name);
+          return Promise.resolve({
+            address: result.user,
+            id: id,
+            quantity: quantity,
+            reward: name,
+          });
+        }
+      });
+      console.log(transaction);
+      resolve(transaction);
+    })
+  );
+};
+
 export const RewardManagerServiceProvider = ({
                                                children
                                              }: Props): ReactElement => {
@@ -142,20 +174,9 @@ export const RewardManagerServiceProvider = ({
           //const result = await Promise.resolve(getTransactionData());
 
           const results = await _rewards.getAllPendingOrders();
-          const transaction: Transactions[] = [];
-          results.map((result) => {
-            transaction.push({
-              address: result.user,
-              id: result.rewardsArray[0].toNumber(),
-              quantity: result.pendingArray[0].toNumber(),
-              reward: "X"
-            });
-            return;
-          });
-
-          return transaction.filter((val) => {
-            return val.quantity > 0;
-          });
+          const transaction = await getTransactions(results, _rewards);
+          console.log(transaction);
+          return transaction;
         },
         listKey: (query) => {
           return query ? ["transaction", query] : ["transaction"];
@@ -177,7 +198,6 @@ export const RewardManagerServiceProvider = ({
         _getAllRewards: async ({ queryKey }) => {
           const [, query] = queryKey;
           const result = await _rewards.getAllRewards();
-          console.log(result);
           return result.filter((val) => {
             return val.inStock > 0;
           });

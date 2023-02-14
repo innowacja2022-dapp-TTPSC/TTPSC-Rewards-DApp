@@ -16,6 +16,7 @@ const TransactionsPanel = (): ReactElement => {
     return <TableLoading columns={4} tableHead={tableHead.transactionsHead} />;
   }
   if (quer.status === "success") {
+    console.log(quer);
     return <TransactionTable data={quer.data} />;
   }
   return <TableError />;
