@@ -106,14 +106,16 @@ const client = create({
 
 const waitForAllowance = async (maxTimeout: number, amount: BigNumber, tokenContract: ethers.Contract, owner: string, spender: string) => {
   const startTime = Date.now();
-  let delay = 1000;
+  let delay = 2000;
   return new Promise(async (resolve, reject) => {
     while (Date.now() - startTime < maxTimeout) {
       const allowance = await tokenContract.allowance(owner, spender);
       if (allowance >= amount) {
+        console.log("Allowance is huge enough")
         return resolve("good");
       }
       await new Promise(resolve => setTimeout(resolve, delay));
+      console.log("No allowance, check again in: ", delay)
       delay += 3000;
     }
     reject(new Error("Timeout reached - unable to place order"));
