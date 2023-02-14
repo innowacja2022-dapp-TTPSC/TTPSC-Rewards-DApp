@@ -1,4 +1,4 @@
-import { Box, Center, Container, Flex, Heading } from "@chakra-ui/react";
+import { Box, Container, Flex, Heading } from "@chakra-ui/react";
 import { useRewardManagerService } from "@services/RewardManagerService";
 import { useQuery } from "@tanstack/react-query";
 import { ReactElement } from "react";
@@ -12,25 +12,31 @@ export const MainBox = (): ReactElement => {
     rewardManagerService._getAllRewards
   );
   return (
-    <>
-      <Center minH="10ch">
-        <Heading as="h2">
-          Redeem
-          <Container color="blue.500" display="inline">
-            TTPSC
-          </Container>
-          tokens for any rewards
-        </Heading>
-      </Center>
-      <Flex justifyContent="space-between" px="10" py="4">
+    <Flex alignItems="center" flexDir="column" gap="10" p="10">
+      <Heading as="h2">
+        Redeem
+        <Container color="pink.500" display="inline">
+          TTPSC
+        </Container>
+        tokens for any rewards
+      </Heading>
+
+      <Flex justifyContent="center" px="10" py="4">
         {quer.status === "loading" ? (
-          <MainLoading />
+          <>
+            <MainLoading />
+            <MainLoading />
+            <MainLoading />
+            <MainLoading />
+            <MainLoading />
+            <MainLoading />
+          </>
         ) : quer.status === "success" ? (
           <CardWrapper data={quer.data} />
         ) : (
           <Box> Error</Box>
         )}
       </Flex>
-    </>
+    </Flex>
   );
 };

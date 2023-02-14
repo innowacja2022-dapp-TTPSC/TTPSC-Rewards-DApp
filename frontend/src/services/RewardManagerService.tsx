@@ -156,7 +156,6 @@ export const RewardManagerServiceProvider = ({
         _getAllRewards: async ({ queryKey }) => {
           const [, query] = queryKey;
           const result = await _rewards.getAllRewards();
-          console.log(result);
           return result.filter((val) => {
             return val.inStock > 0;
           });

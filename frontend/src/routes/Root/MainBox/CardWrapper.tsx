@@ -14,7 +14,7 @@ export const CardWrapper = ({ data }: Props): ReactElement => {
   const rewardManagerService = useRewardManagerService();
 
   return (
-    <Flex flexWrap="wrap" gap="8" justify="center">
+    <Flex alignItems="center" flexWrap="wrap" gap="8" justifyContent="center">
       {data.map((award) => {
         return (
           <AwardCard

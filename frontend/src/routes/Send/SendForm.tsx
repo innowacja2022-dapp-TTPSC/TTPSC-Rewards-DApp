@@ -62,7 +62,7 @@ const SendForm = (): ReactElement => {
       <Center minH="20ch">
         <Heading as="h2">
           Send
-          <Container color="blue.500" display="inline">
+          <Container color="pink.500" display="inline">
             TTPSC
           </Container>
           tokens to anyone

@@ -86,7 +86,7 @@ export const AddAward = (): ReactElement => {
   return (
     <>
       <Button onClick={onOpen} variant="secondary">
-        Add
+        Add award
       </Button>
 
       <Modal isCentered isOpen={isOpen} onClose={onClose}>

@@ -1,4 +1,4 @@
-import { Box } from "@chakra-ui/react";
+import { ConnectYourWallet } from "@components/ConnectYourWallet/ConnectYourWallet";
 import { NoWalletDetected } from "@components/NoWalletDetected";
 import { MainBox } from "@routes/Root/MainBox/MainBox";
 import { WalletService } from "@services/WalletService";
@@ -13,7 +13,7 @@ const Root = (): ReactElement => {
     return <MainBox />;
   }
 
-  return <Box> X</Box>;
+  return <ConnectYourWallet />;
 };
 
 export default Root;

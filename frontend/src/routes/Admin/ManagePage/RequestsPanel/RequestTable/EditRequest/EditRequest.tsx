@@ -99,13 +99,10 @@ export const EditRequest = ({ request }: Props): ReactElement => {
                 <Text h="10">Decision Reason:</Text>
               </Flex>
               <Flex flexDir="column" gap="4">
-                <Select
-                  onChange={(value) => handleStatusChange(value)}
-                  placeholder="Pending"
-                  value={status}
-                >
-                  <option value="ACCEPTED">Accepted</option>
-                  <option value="REJECTED">Rejected</option>
+                <Select onChange={(value) => handleStatusChange(value)}>
+                  <option value="0">Pending</option>
+                  <option value="1">Accepted</option>
+                  <option value="2">Rejected</option>
                 </Select>
 
                 <Input

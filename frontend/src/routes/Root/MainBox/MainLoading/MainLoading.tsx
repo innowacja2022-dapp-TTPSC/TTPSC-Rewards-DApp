@@ -15,7 +15,7 @@ export const MainLoading = (): ReactElement => {
   return (
     <Card bgColor="white" maxW="xs">
       <CardBody>
-        <Skeleton h="80" />
+        <Skeleton boxSize="3xs" />
         <Stack mt="6" spacing="3">
           <SkeletonText mt="4" noOfLines={2} skeletonHeight="2" spacing="4" />
         </Stack>

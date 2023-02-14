@@ -1,4 +1,4 @@
-import { Table, Tbody, Td, Th, Thead, Tr } from "@chakra-ui/react";
+import { Table, Tbody, Td, Text, Th, Thead, Tr } from "@chakra-ui/react";
 import { ScrollArea } from "@components/ScrollArea/ScrollArea";
 import { Requests } from "@services/PaymentManagerService";
 import {
@@ -18,7 +18,13 @@ export const RequestTable = ({ data }: Props): ReactElement => {
   const columns: ColumnDef<Requests>[] = [
     { accessorKey: "amount", header: "Amount" },
     { accessorKey: "requestReason", header: "Request Reason" },
-    { accessorKey: "status", header: "Status" },
+    {
+      accessorKey: "status",
+      header: "Status",
+      cell: () => {
+        return <Text>Pending</Text>;
+      },
+    },
     {
       accessorKey: "manage",
       header: "Manage",

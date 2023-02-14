@@ -1,4 +1,4 @@
-import { Flex, Heading } from "@chakra-ui/react";
+import { ConnectYourWallet } from "@components/ConnectYourWallet/ConnectYourWallet";
 import { NoWalletDetected } from "@components/NoWalletDetected";
 import { useWalletService } from "@services/WalletService";
 import { ReactElement } from "react";
@@ -13,11 +13,7 @@ const Send = (): ReactElement => {
   if (status === "auth") {
     return <SendForm />;
   }
-  return (
-    <Flex alignItems="center" h="full" justifyContent="center" w="full">
-      <Heading>Wallet not connected</Heading>
-    </Flex>
-  );
+  return <ConnectYourWallet />;
 };
 
 export default Send;

@@ -50,7 +50,7 @@ export const AwardCard = ({
       onError: () => {
         toast({
           title: "Error",
-          description: "Failed to edit the request",
+          description: "Failed to collect the reward",
           status: "error",
           duration: 5000,
           isClosable: true,
@@ -59,7 +59,7 @@ export const AwardCard = ({
       onSuccess: () => {
         toast({
           title: "Whooo",
-          description: "The request has been edited",
+          description: "The reward has been collected",
           status: "success",
           duration: 5000,
           isClosable: true,
@@ -73,7 +73,7 @@ export const AwardCard = ({
         <Image
           alt={`values ${value} ${currency}.`}
           borderRadius="lg"
-          boxSize="2xs"
+          boxSize="3xs"
           objectFit="cover"
           src={image}
         />
@@ -84,7 +84,7 @@ export const AwardCard = ({
       <Divider />
       <Flex>
         <Box p="4">
-          <Text color="purple.600" fontSize="2xl">
+          <Text color="pink.600" fontSize="2xl" fontWeight="semibold">
             {value} {currency}
           </Text>
         </Box>

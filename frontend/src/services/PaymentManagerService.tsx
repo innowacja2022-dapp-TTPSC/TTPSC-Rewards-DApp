@@ -1,7 +1,7 @@
 import contractAddress from "@contracts/contract-address.json";
 import PaymentsManager from "@contracts/PaymentsManager.json";
 import { QueryFunction } from "@tanstack/react-query";
-import { ethers } from "ethers";
+import { BigNumber, ethers } from "ethers";
 import {
   createContext,
   ReactElement,
@@ -39,6 +39,9 @@ export type PaymnetManagerServiceValue = {
   _createPaymentRequest: (paymentRequest: PaymentRequet) => Promise<void>;
   _getAllRequests: QueryFunction<Requests[], RequestKey>;
   changeRequestStatus: (request: Requests) => Promise<void>;
+  fireEmployee: (address: string) => Promise<void>;
+  hireEmployee: (address: string) => Promise<void>;
+  hireEmployer: (address: string) => Promise<void>;
   requestKey: (query?: string) => RequestKey;
 };
 
@@ -89,7 +92,7 @@ export const PaymnetManagerServiceProvider = ({
         _createPaymentRequest: (paymentRequest) => {
           const result = _payment.createPaymentRequest(
             paymentRequest.address,
-            paymentRequest.amount,
+            BigNumber.from(paymentRequest.amount),
             paymentRequest.paymentRequestReason
           );
           if (!result) {
@@ -104,7 +107,30 @@ export const PaymnetManagerServiceProvider = ({
         _getAllRequests: async ({ queryKey }) => {
           const [, query] = queryKey;
           const result = await _payment.getPaymentRequestHistory();
-          return result;
+          return result.filter((val) => {
+            return val.status === 0;
+          });
+        },
+        hireEmployee: async (address) => {
+          const result = await _payment.hireEmployee(address);
+          if (!result) {
+            return Promise.reject();
+          }
+          return Promise.resolve();
+        },
+        hireEmployer: async (address) => {
+          const result = await _payment.hireEmployer(address);
+          if (!result) {
+            return Promise.reject();
+          }
+          return Promise.resolve();
+        },
+        fireEmployee: async (address) => {
+          const result = await _payment.fireEmployee(address);
+          if (!result) {
+            return Promise.reject();
+          }
+          return Promise.resolve();
         },
         changeRequestStatus: async (request) => {
           let result;

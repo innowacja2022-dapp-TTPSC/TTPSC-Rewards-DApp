@@ -3,10 +3,10 @@ import { usePaymnetManagerService } from "@services/PaymentManagerService";
 import { useMutation } from "@tanstack/react-query";
 import { ReactElement, useState } from "react";
 
-export const FireEmployee = (): ReactElement => {
+export const HireEmployer = (): ReactElement => {
   const [address, setAddress] = useState("");
   const paymentManagerService = usePaymnetManagerService();
-  const { mutate } = useMutation(paymentManagerService.fireEmployee);
+  const { mutate } = useMutation(paymentManagerService.hireEmployer);
   const toast = useToast();
   const handleSubmit = () => {
     mutate(address, {
@@ -32,7 +32,7 @@ export const FireEmployee = (): ReactElement => {
   };
   return (
     <Flex alignItems="center" gap="4" justifyContent="center">
-      <Text fontWeight="semibold">Fire Employee</Text>
+      <Text fontWeight="semibold">Hire Employer</Text>
       <Flex gap="2">
         <Input
           onChange={(value) => setAddress(value.target.value)}
@@ -40,7 +40,7 @@ export const FireEmployee = (): ReactElement => {
           value={address}
           w="96"
         />
-        <Button onClick={handleSubmit}>Fire</Button>
+        <Button onClick={handleSubmit}>Hire</Button>
       </Flex>
     </Flex>
   );
