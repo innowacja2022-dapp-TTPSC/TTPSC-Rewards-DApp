@@ -15,6 +15,7 @@ import {
 import { RewardManagerServiceValue } from "@services/RewardManagerService";
 import { WalletService } from "@services/WalletService";
 import { useMutation } from "@tanstack/react-query";
+import { ethers } from "ethers";
 import { ReactElement, useContext, useEffect, useState } from "react";
 
 type Props = {
@@ -88,7 +89,7 @@ export const AwardCard = ({
       <Flex>
         <Box p="4">
           <Text color="pink.600" fontSize="2xl" fontWeight="semibold">
-            {value} {currency}
+            {parseFloat(ethers.utils.formatEther(value))} {currency}
           </Text>
         </Box>
         <Spacer />

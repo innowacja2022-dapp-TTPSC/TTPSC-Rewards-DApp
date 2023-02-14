@@ -1,4 +1,4 @@
-import { Image, Table, Tbody, Td, Th, Thead, Tr } from "@chakra-ui/react";
+import { Image, Table, Tbody, Td, Text, Th, Thead, Tr } from "@chakra-ui/react";
 import { ScrollArea } from "@components/ScrollArea/ScrollArea";
 import { Awards } from "@services/RewardManagerService";
 import {
@@ -7,6 +7,7 @@ import {
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
+import { ethers } from "ethers";
 import { Fragment, ReactElement } from "react";
 import { EditAward } from "./EditAward/EditAward";
 
@@ -18,7 +19,17 @@ export const AwardsTable = ({ data }: Props): ReactElement => {
   const columns: ColumnDef<Awards>[] = [
     { accessorKey: "name", header: "Name" },
     { accessorKey: "inStock", header: "Amount" },
-    { accessorKey: "price", header: "Price" },
+    {
+      accessorKey: "price",
+      header: "Price",
+      cell: ({ row }) => {
+        return (
+          <Text>
+            {parseFloat(ethers.utils.formatEther(row.original.price))}
+          </Text>
+        );
+      },
+    },
     {
       accessorKey: "imgHash",
       header: "Image",
