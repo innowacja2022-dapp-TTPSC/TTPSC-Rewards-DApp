@@ -12,12 +12,12 @@ import {
   ModalContent,
   ModalOverlay,
   Spacer,
+  Spinner,
   Stack,
   Text,
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
-import { Loading } from "@routes/ContentWraper/TopBar/ConnectWallet/Loading/Loading";
 import { RewardManagerServiceValue } from "@services/RewardManagerService";
 import { WalletService } from "@services/WalletService";
 import { useMutation } from "@tanstack/react-query";
@@ -91,7 +91,21 @@ export const AwardCard = ({
         <ModalOverlay />
         <ModalContent maxW="lg">
           <ModalBody>
-            <Loading />
+            <Flex
+              alignItems="center"
+              flexDirection="column"
+              justifyContent="center"
+              p="8"
+            >
+              <Spinner
+                color="purple.500"
+                size="xl"
+                speed="0.65s"
+                thickness="4px"
+              />
+              <Heading>Loading</Heading>
+              <Text>Approve this transaction in your wallet app</Text>
+            </Flex>
           </ModalBody>
         </ModalContent>
       </Modal>
