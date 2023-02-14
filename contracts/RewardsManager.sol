@@ -173,11 +173,16 @@ contract RewardsManager {
         return result;
     }
 
+    struct OrderDetails {
+        uint256 id;
+        uint256 pendingQuantity;
+    }
+
     struct PendingOrderDto {
         address user;
-        uint256[] rewardsArray;
-        uint256[] pendingArray;
+        OrderDetails[] orders;
     }
+
 
     function getAllPendingOrders()
     public
@@ -195,22 +200,21 @@ contract RewardsManager {
 
             if (paymentsManager.isCurrentEmployee(user)) {
 
-                uint256[] memory rewardsArray = new uint256[](rewardCount);
-                uint256[] memory pendingArray = new uint256[](rewardCount);
+                OrderDetails[] memory userOrders = new OrderDetails[](rewardCount);
 
                 for (uint256 i = 0; i < rewardCount; i++) {
-                    rewardsArray[i] = rewards[i].id;
+                    OrderDetails memory order;
+                    order.id = rewards[i].id;
+
                     if (orders[user][i] > 0) {
-                        pendingArray[i] = orders[user][i] - collected[user][i];
-                    } else {
-                        pendingArray[i] = 0;
+                        order.pendingQuantity = orders[user][i] - collected[user][i];
                     }
+                    userOrders[i] = order;
                 }
 
                 PendingOrderDto memory dto = PendingOrderDto(
                     user,
-                    rewardsArray,
-                    pendingArray
+                    userOrders
                 );
 
                 dtos[dtoCounter] = dto;
