@@ -3,6 +3,7 @@ pragma solidity ^0.8.0;
 
 import "./TTPSC.sol";
 import "./PaymentsManager.sol";
+import "hardhat/console.sol";
 
 contract RewardsManager {
     address owner;
@@ -43,6 +44,10 @@ contract RewardsManager {
     event InStockChanged(
         uint256 indexed rewardId,
         uint256 inStock
+    );
+    event PriceChanged(
+        uint256 indexed rewardId,
+        uint256 price
     );
     event Transfer(
         address indexed from,
@@ -97,6 +102,15 @@ contract RewardsManager {
         emit InStockChanged(_rewardId, _inStock);
     }
 
+    function changePrice(uint256 _rewardId, uint256 _price) public {
+        require(
+            paymentsManager.isEmployer(msg.sender),
+            "Only employer can change stock count."
+        );
+        rewards[_rewardId].price = _price;
+        emit PriceChanged(_rewardId, _price);
+    }
+
     function placeOrder(uint256 _rewardId, uint256 _quantity) public {
         require(
             paymentsManager.isCurrentEmployee(msg.sender),
@@ -125,6 +139,7 @@ contract RewardsManager {
         rewards[_rewardId].inStock -= _quantity;
         orders[msg.sender][_rewardId] += _quantity;
 
+        //console.log('Employee ', msg.sender, 'placed an order');
         emit OrderPlaced(msg.sender, _rewardId, _quantity);
     }
 
@@ -158,7 +173,55 @@ contract RewardsManager {
         return result;
     }
 
-    function getAllPendingOrders(address user)
+    struct PendingOrderDto {
+        address user;
+        uint256[] rewardsArray;
+        uint256[] pendingArray;
+    }
+
+    function getAllPendingOrders()
+    public
+    view
+    returns (PendingOrderDto[] memory)
+    {
+        uint256 size = paymentsManager.employeesCount();
+        PendingOrderDto[] memory dtos = new PendingOrderDto[](
+            size
+        );
+        uint256 dtoCounter = 0;
+
+        for (uint256 j = 0; j < size; j++) {
+            address user = paymentsManager.employees(j);
+
+            if (paymentsManager.isCurrentEmployee(user)) {
+
+                uint256[] memory rewardsArray = new uint256[](rewardCount);
+                uint256[] memory pendingArray = new uint256[](rewardCount);
+
+                for (uint256 i = 0; i < rewardCount; i++) {
+                    rewardsArray[i] = rewards[i].id;
+                    if (orders[user][i] > 0) {
+                        pendingArray[i] = orders[user][i] - collected[user][i];
+                    } else {
+                        pendingArray[i] = 0;
+                    }
+                }
+
+                PendingOrderDto memory dto = PendingOrderDto(
+                    user,
+                    rewardsArray,
+                    pendingArray
+                );
+
+                dtos[dtoCounter] = dto;
+                dtoCounter++;
+            }
+        }
+
+        return dtos;
+    }
+
+    function getAllPendingOrdersByAddress(address user)
     public
     view
     returns (Reward[] memory, uint256[] memory)
@@ -175,6 +238,7 @@ contract RewardsManager {
         }
         return (rewardsArray, pendingArray);
     }
+
 
     function getOrderStatus(address user, uint256 _rewardId)
     public
