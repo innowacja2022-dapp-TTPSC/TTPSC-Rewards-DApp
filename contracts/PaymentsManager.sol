@@ -2,18 +2,21 @@
 pragma solidity ^0.8.9;
 
 import "./TTPSC.sol";
+import "hardhat/console.sol";
 
 contract PaymentsManager {
     // notice that PaymentsManager require token balance in TTPSC contract
     TTPSC public token;
 
     address[] public employees;
+    uint256 public employeesCount;
 
     mapping(address => bool) public isEmployer;
     mapping(address => bool) public isCurrentEmployee;
+    uint256 public currentEmployeeCount = 0;
 
     mapping(uint256 => PaymentRequest) public paymentRequests;
-    uint256 public paymentRequestCount;
+    uint256 public paymentRequestCount = 0;
 
     enum PaymentRequestStatus {
         PENDING,
@@ -22,6 +25,7 @@ contract PaymentsManager {
     }
 
     struct PaymentRequest {
+        uint256 id;
         address employee;
         uint256 amount;
         string requestReason;
@@ -50,7 +54,7 @@ contract PaymentsManager {
     function hireEmployer(address employer) public {
         require(
             isEmployer[msg.sender],
-            "Only the employer can add employees."
+            "Only the employer can add employers."
         );
 
         addUser(employer, true);
@@ -63,10 +67,12 @@ contract PaymentsManager {
         );
 
         addUser(employee, false);
+        currentEmployeeCount++;
     }
 
     function addUser(address user, bool _isEmployer) private {
         employees.push(user);
+        employeesCount++;
         isEmployer[user] = _isEmployer;
         isCurrentEmployee[user] = true;
     }
@@ -78,6 +84,7 @@ contract PaymentsManager {
         );
 
         isCurrentEmployee[employee] = false;
+        currentEmployeeCount--;
     }
 
     function createPaymentRequest(
@@ -100,6 +107,7 @@ contract PaymentsManager {
 
         uint256 paymentRequestID = paymentRequestCount;
         paymentRequests[paymentRequestID] = PaymentRequest(
+            paymentRequestID,
             recipient,
             amount,
             paymentRequestReason,

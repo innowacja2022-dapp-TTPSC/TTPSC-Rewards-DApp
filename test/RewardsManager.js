@@ -275,7 +275,7 @@ describe("Rewards manager contract", async () => {
                 .to.be.revertedWith("This order has not been placed or has already been collected.");
         });
 
-        it("Should return correct amount of pending orders", async () => {
+        it("Should return correct amount of pending orders per user", async () => {
             const tokenRequestAmount = 2000;
             const ordersAmount = 8;
             const inStock = 10;
@@ -288,16 +288,45 @@ describe("Rewards manager contract", async () => {
             await token.connect(employee2Address).approve(rewardsManager.address, tokenRequestAmount);
 
             for(let i = 0;i<ordersAmount;i++) {
-                if(i >= 8) {
-                    await rewardsManager.markCollected(employee2Address.address, rewards[0].id, 1);
-                }
                 await rewardsManager.connect(employee2Address).placeOrder(rewards[0].id, 1)
             }
 
-            const pendingOrders = await rewardsManager.getAllPendingOrders(employee2Address.address);
+            const pendingOrders = await rewardsManager.getAllPendingOrdersByAddress(employee2Address.address);
             const pendingOrdersCount = await rewardsManager.getPendingOrdersCount(employee2Address.address, rewards[0].id);
 
             expect(pendingOrders[1][0]).to.equal(pendingOrdersCount);
+        });
+
+        it("Should return list of or pending orders", async () => {
+            const tokenRequestAmount = 2000;
+            const inStock = 10;
+            await rewardsManager.addReward(name, imgHash, price, inStock);
+            const rewards = await rewardsManager.getAllRewards();
+
+            const requestId = await paymentsManager.paymentRequestCount();
+            await paymentsManager.connect(employeeAddress).createPaymentRequest(employee2Address.address, tokenRequestAmount, "For completing task");
+            await paymentsManager.acceptPaymentRequest(requestId, "Well done");
+            await token.connect(employee2Address).approve(rewardsManager.address, tokenRequestAmount);
+
+            for(let i = 0;i<3;i++) {
+                await rewardsManager.connect(employee2Address).placeOrder(rewards[0].id, 1)
+            }
+
+            const pendingOrders = await rewardsManager.getAllPendingOrders();
+            const pendingOrdersCount = await rewardsManager.getPendingOrdersCount(employee2Address.address, rewards[0].id);
+
+            const sums = pendingOrders.reduce((acc, item) => {
+                item.slice(1).forEach((value, index) => {
+                    if (acc[index]) {
+                        acc[index] = acc[index].add(BigInt(value[0].hex));
+                    } else {
+                        acc[index] = BigInt(value[0]._hex);
+                    }
+                });
+                return acc;
+            }, []);
+            const totalSum = sums.reduce((acc, sum) => acc + Number(sum), 0);
+            expect(totalSum).to.equal(pendingOrdersCount);
         });
     });
     
