@@ -7,7 +7,7 @@ export const _startPollingData = (
 ): NodeJS.Timer => {
   const _pollDataInterval = setInterval(
     () => _updateBalance(_token, selectedAddress),
-    1000
+    10000
   );
 
   // We run it once immediately so we don't have to wait for it
@@ -21,12 +21,4 @@ export const _stopPollingData = (
 ): undefined => {
   clearInterval(_pollDataInterval);
   return undefined;
-};
-
-export const _getBalance = (
-  _token: ethers.Contract,
-  selectedAddress: string
-): number => {
-  const balance = _token.balanceOf(selectedAddress);
-  return balance;
 };

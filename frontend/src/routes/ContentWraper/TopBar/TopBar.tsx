@@ -4,7 +4,7 @@ import { paths } from "@utils/paths";
 import { ReactElement, useContext, useEffect, useState } from "react";
 import { AdminLink } from "./AdminLink/AdminLink";
 import { ConnectWallet } from "./ConnectWallet/ConnectWallet";
-import { DisconnectWallet } from "../Menu/Menu";
+import { Menu } from "./Menu/Menu";
 import { TopBarLink } from "./TopBarLink/TopBarLink";
 
 export const TopBar = (): ReactElement => {
@@ -20,8 +20,9 @@ export const TopBar = (): ReactElement => {
   }, [context]);
   return (
     <Flex
-      bgGradient="linear(to-r, #923086 0.18%, #D03A8C 100%)"
+      bgGradient="linear(to-r, pink.700 0.18%, pink.500 100%)"
       borderBottomRadius="2xl"
+      h="20"
       justifyContent="space-between"
       px="10"
       py="4"
@@ -33,7 +34,7 @@ export const TopBar = (): ReactElement => {
         <TopBarLink path={paths.root}>Awards</TopBarLink>
         <TopBarLink path={paths.send}>Send</TopBarLink>
         <TopBarLink path={paths.about}>About</TopBarLink>
-        {isAdmin && <AdminLink path={paths.admin}>Menage</AdminLink>}
+        {isAdmin && <AdminLink path={paths.admin}>Manage</AdminLink>}
       </Flex>
       {status === "anon" ? (
         <Box>
@@ -41,7 +42,7 @@ export const TopBar = (): ReactElement => {
         </Box>
       ) : status === "auth" ? (
         <Box>
-          <DisconnectWallet />
+          <Menu />
         </Box>
       ) : undefined}
     </Flex>

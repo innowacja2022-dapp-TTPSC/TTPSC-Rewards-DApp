@@ -1,4 +1,5 @@
 import contractAddress from "@contracts/contract-address.json";
+import PaymentsManager from "@contracts/PaymentsManager.json";
 import TokenArtifact from "@contracts/Token.json";
 import { Token, Wallet } from "@services/WalletService";
 import { ethers } from "ethers";
@@ -7,13 +8,13 @@ import { _startPollingData } from "./pollingData";
 export const _getTokenData = async (
   _token: ethers.Contract
 ): Promise<Token> => {
-  const name = await _token.name();
-  const symbol = await _token.symbol();
+  const name = await _token.name()[0];
+  const symbol = await _token.symbol()[0];
 
   return { name, symbol };
 };
 
-export const _initialize = async (): Promise<Wallet | undefined> => {
+export const _initializeToken = async (): Promise<Wallet | undefined> => {
   const provider = new ethers.providers.Web3Provider(window.ethereum);
   if (!provider) {
     return Promise.reject();
@@ -25,8 +26,9 @@ export const _initialize = async (): Promise<Wallet | undefined> => {
   const _token = new ethers.Contract(
     contractAddress.Token,
     TokenArtifact.abi,
-    provider.getSigner(0)
+    provider.getSigner()
   );
+
   if (!_token) {
     return Promise.reject();
   }
@@ -39,19 +41,28 @@ export const _initialize = async (): Promise<Wallet | undefined> => {
     return Promise.reject();
   }
   const balance = ethers.utils.formatEther(
-    await provider.getBalance(selectedAddress)
+    await _token.balanceOf(selectedAddress)
   );
+
   if (!balance) {
     return Promise.reject();
   }
 
+  const _payment = new ethers.Contract(
+    contractAddress.PaymentsManager,
+    PaymentsManager.abi,
+    provider.getSigner()
+  );
+
+  const isAdmin = await _payment.isEmployer(selectedAddress);
   return {
+    provider,
     _token,
     tokenData,
     _pollDataInterval,
     balance,
     selectedAddress,
-    isAdmin: true,
+    isAdmin: isAdmin,
   };
 };
 

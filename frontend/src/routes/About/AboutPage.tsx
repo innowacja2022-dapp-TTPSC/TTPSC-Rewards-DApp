@@ -1,13 +1,13 @@
 import {
-  Stack,
-  Text,
   Center,
   Container,
+  Divider,
   Flex,
   Heading,
-  Spacer,
   Image,
-  Divider,
+  Spacer,
+  Stack,
+  Text,
 } from "@chakra-ui/react";
 import { ReactElement } from "react";
 
@@ -17,7 +17,7 @@ const AboutPage = (): ReactElement => {
       <Center minH="20ch">
         <Heading as="h6">
           The future of
-          <Container color="blue.500" display="inline">
+          <Container color="pink.500" display="inline">
             receiving rewards
           </Container>
           is here!

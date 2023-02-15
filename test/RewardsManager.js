@@ -349,9 +349,9 @@ describe("Rewards manager contract", async () => {
             const sums = pendingOrders.reduce((acc, item) => {
                 item.slice(1).forEach((value, index) => {
                     if (acc[index]) {
-                        acc[index] = acc[index].add(BigInt(value[0].hex));
+                        acc[index] = acc[index].add(BigInt(value[0][1].hex));
                     } else {
-                        acc[index] = BigInt(value[0]._hex);
+                        acc[index] = BigInt(value[0][1]._hex);
                     }
                 });
                 return acc;

@@ -9,7 +9,6 @@ import {
 import { useAnonWalletService } from "@services/WalletService";
 import { useMutation } from "@tanstack/react-query";
 import { ReactElement, useState } from "react";
-import { commonButtonWidth } from "../../Menu/PopoverMenu/PopoverMenu";
 import { Error } from "./Error/Error";
 import { Loading } from "./Loading/Loading";
 
@@ -29,12 +28,8 @@ export const ConnectWallet = (): ReactElement => {
   return (
     <>
       <Button
-        _hover={{ bgColor: "purple.400" }}
-        bgColor="purple.500"
         borderRadius="2xl"
         boxShadow="0px 4px 4px rgba(0, 0, 0, 0.25)"
-        textColor="white"
-        minWidth={commonButtonWidth}
         onClick={() => handleConnection()}
       >
         Connect Wallet

@@ -1,4 +1,4 @@
-import { _initialize } from "@utils/initialize";
+import { _initializeToken } from "@utils/initializeToken";
 import { _stopPollingData } from "@utils/pollingData";
 import { ethers } from "ethers";
 import {
@@ -22,6 +22,7 @@ export type Wallet = {
   _token: ethers.Contract;
   balance: string;
   isAdmin: boolean;
+  provider: ethers.providers.Web3Provider;
   selectedAddress: string;
   tokenData: Token;
 };
@@ -39,6 +40,7 @@ export type AnonWallet = {
 export type AuthWallet = {
   _disconnectWallet: () => Promise<void>;
   _getAddress: () => string;
+  _getBallance: () => string;
   _isAdmin: () => boolean;
 };
 
@@ -119,7 +121,7 @@ export const WalletServiceProvider = ({ children }: Props): ReactElement => {
         localStorage.removeItem("authorization");
         setData({ status: "anon" });
       } else {
-        const initWallet = await _initialize();
+        const initWallet = await _initializeToken();
         if (initWallet) {
           setData({ status: "auth", value: initWallet });
         }
@@ -139,7 +141,7 @@ export const WalletServiceProvider = ({ children }: Props): ReactElement => {
               if (!window.ethereum) {
                 return Promise.reject(new Error("No MetaMask"));
               }
-              const initWallet = await _initialize();
+              const initWallet = await _initializeToken();
               if (initWallet) {
                 setData({ status: "auth", value: initWallet });
                 localStorage.setItem("authorization", "auth");
@@ -165,6 +167,9 @@ export const WalletServiceProvider = ({ children }: Props): ReactElement => {
             },
             _isAdmin: () => {
               return data.value.isAdmin;
+            },
+            _getBallance: () => {
+              return data.value.balance;
             },
           },
           wallet: data.value,
