@@ -46,7 +46,7 @@ export const EditAward = ({ award }: Props): ReactElement => {
         onError: () => {
           toast({
             title: "Error",
-            description: "Failed to collect the award",
+            description: "Failed to change the award",
             status: "error",
             duration: 5000,
             isClosable: true,
@@ -55,7 +55,7 @@ export const EditAward = ({ award }: Props): ReactElement => {
         onSuccess: () => {
           toast({
             title: "Whooo",
-            description: "The award has been collected",
+            description: "The award has been changed",
             status: "success",
             duration: 5000,
             isClosable: true,
@@ -88,20 +88,12 @@ export const EditAward = ({ award }: Props): ReactElement => {
               <Flex gap="4">
                 <Flex flexDir="column" gap="4">
                   <Text h="10">Amount:</Text>
-                  <Text h="10">Price:</Text>
                 </Flex>
                 <Flex flexDir="column" gap="4">
                   <NumberInput
                     onChange={(value) => setAmount(Number(value))}
                     placeholder="10"
                     value={amount}
-                  >
-                    <NumberInputField />
-                  </NumberInput>
-                  <NumberInput
-                    onChange={(value) => setPrice(Number(value))}
-                    placeholder="2.5"
-                    value={price}
                   >
                     <NumberInputField />
                   </NumberInput>
