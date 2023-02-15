@@ -131,7 +131,7 @@ const waitForAllowance = async (
 const getRewardName = async (id: number, _rewards: ethers.Contract) => {
   const result = await _rewards.rewards(id);
 
-  return Promise.resolve(result.name);
+  return result.name;
 };
 
 export const RewardManagerServiceProvider = ({
@@ -153,29 +153,42 @@ export const RewardManagerServiceProvider = ({
       value: {
         _getTransactionData: async ({ queryKey }) => {
           const [, query] = queryKey;
-          //const result = await Promise.resolve(getTransactionData());
 
           const results = await _rewards.getAllPendingOrders();
-          const transaction: Transactions[] = [];
-          results.map((result) => {
-            result.orders.map((order) => {
-              if (order.pendingQuantity > 0) {
-                const id = order.id.toNumber();
-                const quantity = order.pendingQuantity.toNumber();
-                const name = getRewardName(id, _rewards).then((v) => {
-                  return transaction.push({
+          const transactions = await Promise.all(
+            results.map(async (result) => {
+              console.log(result.orders);
+              const userOrders = result.orders.filter(
+                (order) => order.pendingQuantity > 0
+              );
+              const ordersArray = await Promise.all(
+                userOrders.map(async (singleOrder) => {
+                  const reward = await _rewards.rewards(
+                    singleOrder.id.toNumber()
+                  );
+                  return {
                     address: result.user,
-                    id: id,
-                    quantity: quantity,
-                    reward: v,
-                  });
-                });
-              }
-            });
-            return;
+                    id: singleOrder.id.toNumber(),
+                    quantity: singleOrder.pendingQuantity.toNumber(),
+                    reward: reward.name,
+                  };
+                })
+              );
+
+              return ordersArray;
+            })
+          );
+          const x: Transactions[] = [];
+
+          transactions.map((val) => {
+            if (val.length > 0) {
+              val.forEach((element) => {
+                x.push(element);
+              });
+            }
           });
-          console.log(transaction);
-          return transaction;
+
+          return x;
         },
         listKey: (query) => {
           return query ? ["transaction", query] : ["transaction"];
