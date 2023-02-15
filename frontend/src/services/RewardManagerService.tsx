@@ -157,7 +157,6 @@ export const RewardManagerServiceProvider = ({
           const results = await _rewards.getAllPendingOrders();
           const transactions = await Promise.all(
             results.map(async (result) => {
-              console.log(result.orders);
               const userOrders = result.orders.filter(
                 (order) => order.pendingQuantity > 0
               );

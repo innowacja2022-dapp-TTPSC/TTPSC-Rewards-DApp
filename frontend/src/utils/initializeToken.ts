@@ -1,4 +1,5 @@
 import contractAddress from "@contracts/contract-address.json";
+import PaymentsManager from "@contracts/PaymentsManager.json";
 import TokenArtifact from "@contracts/Token.json";
 import { Token, Wallet } from "@services/WalletService";
 import { ethers } from "ethers";
@@ -47,6 +48,13 @@ export const _initializeToken = async (): Promise<Wallet | undefined> => {
     return Promise.reject();
   }
 
+  const _payment = new ethers.Contract(
+    contractAddress.PaymentsManager,
+    PaymentsManager.abi,
+    provider.getSigner()
+  );
+
+  const isAdmin = await _payment.isEmployer(selectedAddress);
   return {
     provider,
     _token,
@@ -54,7 +62,7 @@ export const _initializeToken = async (): Promise<Wallet | undefined> => {
     _pollDataInterval,
     balance,
     selectedAddress,
-    isAdmin: true,
+    isAdmin: isAdmin,
   };
 };
 
